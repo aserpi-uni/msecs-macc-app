@@ -28,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
 
         val username = findViewById<EditText>(R.id.username)
         val password = findViewById<EditText>(R.id.password)
+        val server = findViewById<EditText>(R.id.server)
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
 
@@ -45,6 +46,9 @@ class LoginActivity : AppCompatActivity() {
             }
             if (loginState.passwordError != null) {
                 password.error = getString(loginState.passwordError)
+            }
+            if (loginState.serverError != null) {
+                server.error = getString(loginState.serverError)
             }
         })
 
@@ -67,15 +71,25 @@ class LoginActivity : AppCompatActivity() {
         username.afterTextChanged {
             loginViewModel.loginDataChanged(
                     username.text.toString(),
-                    password.text.toString()
+                    password.text.toString(),
+                    server.text.toString()
             )
         }
 
-        password.apply {
+        password.afterTextChanged {
+            loginViewModel.loginDataChanged(
+                username.text.toString(),
+                password.text.toString(),
+                server.text.toString()
+            )
+        }
+
+        server.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
                         username.text.toString(),
-                        password.text.toString()
+                        password.text.toString(),
+                        server.text.toString()
                 )
             }
 
@@ -84,7 +98,8 @@ class LoginActivity : AppCompatActivity() {
                     EditorInfo.IME_ACTION_DONE ->
                         loginViewModel.login(
                                 username.text.toString(),
-                                password.text.toString()
+                                password.text.toString(),
+                                server.text.toString()
                         )
                 }
                 false
@@ -92,7 +107,7 @@ class LoginActivity : AppCompatActivity() {
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
+                loginViewModel.login(username.text.toString(), password.text.toString(), server.text.toString())
             }
         }
     }

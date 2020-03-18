@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
+import com.android.volley.*
 import it.uniroma1.keeptime.data.LoginRepository
-import it.uniroma1.keeptime.data.Result
 
 import it.uniroma1.keeptime.R
+import it.uniroma1.keeptime.data.model.LoggedInUser
 
 class LoginViewModel : ViewModel() {
 
@@ -20,14 +21,7 @@ class LoginViewModel : ViewModel() {
     private var loginRepository = LoginRepository()
 
     fun login(username: String, password: String, server: String) {
-        // can be launched in a separate asynchronous job
-        val result = loginRepository.login(username, password, server)
-
-        if (result is Result.Success) {
-            _loginResult.value = LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
-        } else {
-            _loginResult.value = LoginResult(error = R.string.login_failed)
-        }
+        loginRepository.login(username, password, server, ::onLoginSuccess, ::onLoginFailed)
     }
 
     fun loginDataChanged(username: String, password: String, server: String) {
@@ -55,5 +49,24 @@ class LoginViewModel : ViewModel() {
     // A placeholder server validation check
     private fun isServerValid(server: String): Boolean {
         return Patterns.WEB_URL.matcher(server).matches()
+    }
+
+    fun onLoginFailed(error: VolleyError) { //TODO
+        _loginResult.value = LoginResult(error = R.string.login_failed)
+        if (error is TimeoutError || error is NoConnectionError) {
+            // TODO
+        } else if (error is AuthFailureError) {
+            // TODO
+        } else if (error is ServerError) {
+            //TODO
+        } else if (error is NetworkError) {
+            //TODO
+        } else if (error is ParseError) {
+            //TODO
+        }
+    }
+
+    fun onLoginSuccess(user: LoggedInUser) {
+        _loginResult.value = LoginResult(success = LoggedInUserView(displayName = user.email))
     }
 }

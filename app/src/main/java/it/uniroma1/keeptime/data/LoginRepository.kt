@@ -1,6 +1,10 @@
 package it.uniroma1.keeptime.data
 
+import com.android.volley.*
+import com.android.volley.toolbox.JsonObjectRequest
+import it.uniroma1.keeptime.KeepTime
 import it.uniroma1.keeptime.data.model.LoggedInUser
+import org.json.JSONObject
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -10,31 +14,36 @@ import it.uniroma1.keeptime.data.model.LoggedInUser
 class LoginRepository {
 
     companion object {
-    var user: LoggedInUser? = null
-        private set
+        var user: LoggedInUser? = null
+            private set
 
-    val isLoggedIn: Boolean
-        get() = user != null
+        val isLoggedIn: Boolean
+            get() = user != null
+    }
+
+    fun login(username: String, password: String, server: String,
+              successCallback: (LoggedInUser) -> Unit, failCallback : (VolleyError) -> Unit) {
+        //TODO: server formatting
+        val requestParameters = JSONObject("{\"worker\":{\"email\":\"$username\",\"password\":\"$password\"}}")
+        val loginRequest = JsonObjectRequest(
+            Request.Method.POST, "$server/workers/sign_in.json", requestParameters,
+            Response.Listener { response -> onLoginSuccess(response, successCallback) },
+            Response.ErrorListener { error -> onLoginFailure(error, failCallback) })
+
+        NetworkRequestSingleton.getInstance(KeepTime.context).addToRequestQueue(loginRequest)
     }
 
     fun logout() {
         user = null
     }
 
-    fun login(username: String, password: String, server: String): Result<LoggedInUser> {
-        // handle login
-        val result = dataSource.login(username, password, server)
-
-        if (result is Result.Success) {
-            setLoggedInUser(result.data)
-        }
-
-        return result
+    fun onLoginFailure(error: VolleyError, callback: (VolleyError) -> Unit) {
+        user = null
+        callback(error)
     }
 
-    private fun setLoggedInUser(loggedInUser: LoggedInUser) {
-        this.user = loggedInUser
-        // If user credentials will be cached in local storage, it is recommended it be encrypted
-        // @see https://developer.android.com/training/articles/keystore
+    fun onLoginSuccess(response: JSONObject, callback: (LoggedInUser) -> Unit) {
+        user = LoggedInUser(response.getString("email"), response.getString("url"))
+        callback(user!!)
     }
 }

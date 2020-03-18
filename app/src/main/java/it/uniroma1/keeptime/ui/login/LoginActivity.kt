@@ -83,31 +83,27 @@ class LoginActivity : AppCompatActivity() {
             )
         }
 
-        server.apply {
-            afterTextChanged {
-                loginViewModel.loginDataChanged(
-                        username.text.toString(),
-                        password.text.toString(),
-                        server.text.toString()
-                )
-            }
-
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                                username.text.toString(),
-                                password.text.toString(),
-                                server.text.toString()
-                        )
+        server.afterTextChanged {
+            loginViewModel.loginDataChanged(
+                username.text.toString(),
+                password.text.toString(),
+                server.text.toString()
+            )
+        }
+        server.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> {
+                    login.performClick()
+                    true
+                } else -> {
+                    false
                 }
-                false
             }
+        }
 
-            login.setOnClickListener {
-                loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString(), server.text.toString())
-            }
+        login.setOnClickListener {
+            loading.visibility = View.VISIBLE
+            loginViewModel.login(username.text.toString(), password.text.toString(), server.text.toString())
         }
     }
 

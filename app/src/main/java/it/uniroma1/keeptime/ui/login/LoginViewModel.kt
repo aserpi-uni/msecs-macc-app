@@ -9,13 +9,15 @@ import it.uniroma1.keeptime.data.Result
 
 import it.uniroma1.keeptime.R
 
-class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+class LoginViewModel : ViewModel() {
 
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
+
+    private var loginRepository = LoginRepository()
 
     fun login(username: String, password: String, server: String) {
         // can be launched in a separate asynchronous job

@@ -2,7 +2,6 @@ package it.uniroma1.keeptime.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import it.uniroma1.keeptime.data.LoginDataSource
 import it.uniroma1.keeptime.data.LoginRepository
 
 /**
@@ -15,9 +14,7 @@ class LoginViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             return LoginViewModel(
-                    loginRepository = LoginRepository(
-                            dataSource = LoginDataSource()
-                    )
+                    loginRepository = LoginRepository()
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

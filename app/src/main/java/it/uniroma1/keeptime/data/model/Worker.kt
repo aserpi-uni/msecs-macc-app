@@ -4,7 +4,6 @@ import android.net.Uri
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
-import com.android.volley.toolbox.JsonObjectRequest
 import it.uniroma1.keeptime.KeepTime
 import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
 import org.json.JSONObject

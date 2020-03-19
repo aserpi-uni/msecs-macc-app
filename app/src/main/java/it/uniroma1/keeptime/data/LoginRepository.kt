@@ -40,7 +40,7 @@ class LoginRepository {
             Response.Listener { response -> onLoginSuccess(response, successCallback, failCallback) },
             Response.ErrorListener { error -> onLoginFailure(error, failCallback) })
 
-        NetworkRequestSingleton.getInstance(KeepTime.context).addToRequestQueue(loginRequest, false)
+        KeepTime.instance!!.requestQueue.add(loginRequest)
     }
 
     fun logout(successCallback: () -> Unit, failCallback: (VolleyError) -> Unit) {
@@ -51,7 +51,7 @@ class LoginRepository {
             Request.Method.DELETE, serverBuilder.build().toString(), null,
             Response.Listener { successCallback() }, Response.ErrorListener { error -> failCallback(error) }
         )
-        NetworkRequestSingleton.getInstance(KeepTime.context).addToRequestQueue(logoutRequest)
+        KeepTime.instance!!.requestQueue.add(logoutRequest)
     }
 
     fun onLoginFailure(error: VolleyError, callback: (VolleyError) -> Unit) {

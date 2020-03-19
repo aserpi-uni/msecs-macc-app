@@ -1,20 +1,24 @@
 package it.uniroma1.keeptime.ui.login
 
 import android.app.Activity
-import androidx.lifecycle.Observer
+import android.content.Context
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
+import com.android.volley.*
+import com.google.android.material.snackbar.Snackbar
 import it.uniroma1.keeptime.R
 
 class LoginActivity : AppCompatActivity() {
@@ -60,11 +64,12 @@ class LoginActivity : AppCompatActivity() {
             }
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
+                setResult(Activity.RESULT_OK)
 
-            //Complete and destroy login activity once successful
-            finish()
+                //Complete and destroy login activity once successful
+                finish()
+            }
+
         })
 
         username.afterTextChanged {
@@ -102,6 +107,8 @@ class LoginActivity : AppCompatActivity() {
         }
 
         login.setOnClickListener {
+            val inputManager: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(findViewById<ConstraintLayout>(R.id.loginContainer).getWindowToken(), 0);
             loading.visibility = View.VISIBLE
             loginViewModel.login(username.text.toString(), password.text.toString(), server.text.toString())
         }
@@ -119,7 +126,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+        Snackbar.make(
+            findViewById(R.id.loginCoordinatorLayout),
+            errorString,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 }
 

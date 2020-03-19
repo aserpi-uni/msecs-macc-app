@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
 import com.android.volley.*
+import com.google.android.material.snackbar.Snackbar
 import it.uniroma1.keeptime.data.LoginRepository
 
 import it.uniroma1.keeptime.R
@@ -51,19 +52,16 @@ class LoginViewModel : ViewModel() {
         return Patterns.WEB_URL.matcher(server).matches()
     }
 
-    fun onLoginFailed(error: VolleyError) { //TODO
-        _loginResult.value = LoginResult(error = R.string.login_failed)
-        if (error is TimeoutError || error is NoConnectionError) {
-            // TODO
-        } else if (error is AuthFailureError) {
-            // TODO
-        } else if (error is ServerError) {
-            //TODO
-        } else if (error is NetworkError) {
-            //TODO
-        } else if (error is ParseError) {
-            //TODO
+    fun onLoginFailed(error: VolleyError) {
+        val errorMessage = when(error) {
+            is NoConnectionError, is TimeoutError -> R.string.failed_no_response
+            is AuthFailureError -> R.string.failed_wrong_credentials
+            is NetworkError -> R.string.failed_network
+            is ParseError, is ServerError -> R.string.failed_server
+            else -> R.string.failed_unknown
         }
+
+        _loginResult.value = LoginResult(error = errorMessage)
     }
 
     fun onLoginSuccess(user: LoggedInUser) {

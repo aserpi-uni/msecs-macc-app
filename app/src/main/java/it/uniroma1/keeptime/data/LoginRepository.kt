@@ -42,8 +42,15 @@ class LoginRepository {
         NetworkRequestSingleton.getInstance(KeepTime.context).addToRequestQueue(loginRequest, false)
     }
 
-    fun logout() {
-        user = null
+    fun logout(successCallback: () -> Unit, failCallback: (VolleyError) -> Unit) {
+        val serverBuilder = Uri.parse(server).buildUpon()
+        serverBuilder.appendPath("workers").appendPath("sign_out.json")
+
+        val logoutRequest = JsonObjectRequest(
+            Request.Method.DELETE, serverBuilder.build().toString(), null,
+            Response.Listener { successCallback() }, Response.ErrorListener { error -> failCallback(error) }
+        )
+        NetworkRequestSingleton.getInstance(KeepTime.context).addToRequestQueue(logoutRequest)
     }
 
     fun onLoginFailure(error: VolleyError, callback: (VolleyError) -> Unit) {

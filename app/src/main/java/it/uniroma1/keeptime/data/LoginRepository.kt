@@ -66,6 +66,6 @@ class LoginRepository {
             response.getString("url")
         )
 
-        Worker.getFromServer((user as LoggedInUser).url, successCallback, failCallback)
+        user!!.getFromServer((user as LoggedInUser).url, successCallback, failCallback)
     }
 }

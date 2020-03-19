@@ -1,5 +1,6 @@
 package it.uniroma1.keeptime.data
 
+import android.net.Uri
 import com.android.volley.*
 import com.android.volley.toolbox.JsonObjectRequest
 import it.uniroma1.keeptime.KeepTime
@@ -14,19 +15,27 @@ import org.json.JSONObject
 class LoginRepository {
 
     companion object {
+        val isLoggedIn: Boolean
+            get() = user != null
+
         var user: LoggedInUser? = null
             private set
 
-        val isLoggedIn: Boolean
-            get() = user != null
+        private var server: String? = null
     }
 
-    fun login(username: String, password: String, server: String,
-              successCallback: (LoggedInUser) -> Unit, failCallback : (VolleyError) -> Unit) {
-        //TODO: server formatting
+    fun login(
+        username: String, password: String, server_: String,
+        successCallback: (LoggedInUser) -> Unit, failCallback: (VolleyError) -> Unit
+    ) {
+        val serverBuilder = Uri.parse(server_).buildUpon()
+        serverBuilder.scheme("https")
+        server = serverBuilder.build().toString()
+        serverBuilder.appendPath("workers").appendPath("sign_in.json")
+
         val requestParameters = JSONObject("{\"worker\":{\"email\":\"$username\",\"password\":\"$password\"}}")
         val loginRequest = JsonObjectRequest(
-            Request.Method.POST, "$server/workers/sign_in.json", requestParameters,
+            Request.Method.POST, serverBuilder.build().toString(), requestParameters,
             Response.Listener { response -> onLoginSuccess(response, successCallback) },
             Response.ErrorListener { error -> onLoginFailure(error, failCallback) })
 

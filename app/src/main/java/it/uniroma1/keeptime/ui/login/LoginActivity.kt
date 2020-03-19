@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.android.volley.*
 import com.google.android.material.snackbar.Snackbar
 import it.uniroma1.keeptime.R
+import it.uniroma1.keeptime.data.model.Worker
 
 class LoginActivity : AppCompatActivity() {
 
@@ -114,9 +115,9 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUiWithUser(model: LoggedInUserView) {
+    private fun updateUiWithUser(model: Worker) {
         val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
+        val displayName = model.email
         // TODO : initiate successful logged in experience
         Toast.makeText(
                 applicationContext,

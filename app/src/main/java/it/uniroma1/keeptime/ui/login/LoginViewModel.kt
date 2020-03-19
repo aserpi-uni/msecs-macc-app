@@ -10,6 +10,7 @@ import it.uniroma1.keeptime.data.LoginRepository
 
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.model.LoggedInUser
+import it.uniroma1.keeptime.data.model.Worker
 
 class LoginViewModel : ViewModel() {
 
@@ -64,7 +65,7 @@ class LoginViewModel : ViewModel() {
         _loginResult.value = LoginResult(error = errorMessage)
     }
 
-    fun onLoginSuccess(user: LoggedInUser) {
-        _loginResult.value = LoginResult(success = LoggedInUserView(displayName = user.email))
+    fun onLoginSuccess(user: Worker) {
+        _loginResult.value = LoginResult(success = user)
     }
 }

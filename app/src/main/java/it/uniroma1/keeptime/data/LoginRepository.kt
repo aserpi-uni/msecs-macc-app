@@ -30,7 +30,7 @@ class LoginRepository {
             Response.Listener { response -> onLoginSuccess(response, successCallback) },
             Response.ErrorListener { error -> onLoginFailure(error, failCallback) })
 
-        NetworkRequestSingleton.getInstance(KeepTime.context).addToRequestQueue(loginRequest)
+        NetworkRequestSingleton.getInstance(KeepTime.context).addToRequestQueue(loginRequest, false)
     }
 
     fun logout() {
@@ -43,7 +43,11 @@ class LoginRepository {
     }
 
     fun onLoginSuccess(response: JSONObject, callback: (LoggedInUser) -> Unit) {
-        user = LoggedInUser(response.getString("email"), response.getString("url"))
+        user = LoggedInUser(
+            response.getString("authentication_token"),
+            response.getString("email"),
+            response.getString("url")
+        )
         callback(user!!)
     }
 }

@@ -22,7 +22,11 @@ class NetworkRequestSingleton constructor(context: Context) {
         // Activity or BroadcastReceiver if someone passes one in.
         Volley.newRequestQueue(context.applicationContext)
     }
-    fun <T> addToRequestQueue(req: Request<T>) {
+    fun <T> addToRequestQueue(req: Request<T>, authenticate: Boolean = true) {
+        if(authenticate) {
+            req.headers["X-USER-EMAIL"] = LoginRepository.user?.email
+            req.headers["X-USER-TOKEN"] = LoginRepository.user?.authenticationToken
+        }
         requestQueue.add(req)
     }
 }

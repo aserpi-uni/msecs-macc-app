@@ -5,11 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
 import com.android.volley.*
-import com.google.android.material.snackbar.Snackbar
 import it.uniroma1.keeptime.data.LoginRepository
 
 import it.uniroma1.keeptime.R
-import it.uniroma1.keeptime.data.model.LoggedInUser
 import it.uniroma1.keeptime.data.model.Worker
 
 class LoginViewModel : ViewModel() {

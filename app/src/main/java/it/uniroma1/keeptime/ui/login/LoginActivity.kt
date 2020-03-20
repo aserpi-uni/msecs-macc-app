@@ -2,6 +2,7 @@ package it.uniroma1.keeptime.ui.login
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,16 +12,21 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.android.volley.*
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKeys
 import com.google.android.material.snackbar.Snackbar
+import it.uniroma1.keeptime.KeepTime
+import it.uniroma1.keeptime.NavigationDrawer
 import it.uniroma1.keeptime.R
-import it.uniroma1.keeptime.data.model.Worker
+import it.uniroma1.keeptime.data.LoginRepository
+import java.io.File
+import java.io.ObjectInputStream
+
 
 class LoginActivity : AppCompatActivity() {
 
@@ -38,6 +44,36 @@ class LoginActivity : AppCompatActivity() {
         val loading = findViewById<ProgressBar>(R.id.loading)
 
         loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
+        fun loginWithSavedCredentials() {
+            val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+
+            val file = File(KeepTime.context.filesDir, "CredentialsFile")
+            val encryptedFile = EncryptedFile.Builder(
+                file,
+                KeepTime.context,
+                masterKeyAlias,
+                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            ).build()
+
+            // Read credentials from encrypted local storage
+            encryptedFile.openFileInput().use { inStream ->
+                ObjectInputStream(inStream).use { objInStream ->
+                    loading.visibility = View.VISIBLE
+
+                    val url_ = objInStream.readObject() as String
+                    val email_ = objInStream.readObject() as String
+                    val authenticationToken_ = objInStream.readObject() as String
+
+                    LoginRepository().checkCredentials(url_,email_, authenticationToken_,
+                        loginViewModel::onLoginSuccess, loginViewModel::onLoginFailed)
+                }
+            }
+        }
+        try {
+            loginWithSavedCredentials()
+        } catch (error: java.io.IOException) { }
+
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
@@ -64,11 +100,7 @@ class LoginActivity : AppCompatActivity() {
                 showLoginFailed(loginResult.error)
             }
             if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-                setResult(Activity.RESULT_OK)
-
-                //Complete and destroy login activity once successful
-                finish()
+                endActivity()
             }
 
         })
@@ -115,15 +147,10 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUiWithUser(model: Worker) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model.email
-        // TODO : initiate successful logged in experience
-        Toast.makeText(
-                applicationContext,
-                "$welcome $displayName",
-                Toast.LENGTH_LONG
-        ).show()
+    private fun endActivity() {
+        startActivity(Intent(this, NavigationDrawer::class.java))
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {

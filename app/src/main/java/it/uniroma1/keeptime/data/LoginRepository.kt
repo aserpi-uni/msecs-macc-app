@@ -1,12 +1,19 @@
 package it.uniroma1.keeptime.data
 
 import android.net.Uri
-import com.android.volley.*
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKeys
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import it.uniroma1.keeptime.KeepTime
 import it.uniroma1.keeptime.data.model.Worker
 import it.uniroma1.keeptime.data.model.WorkerReference
 import org.json.JSONObject
+import java.io.File
+import java.io.ObjectOutputStream
+
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -26,6 +33,13 @@ class LoginRepository {
         var user: WorkerReference? = null
 
         private var server: String? = null
+    }
+
+    fun checkCredentials(url: String, email_: String, authenticationToken_: String,
+                         successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit) {
+        authenticationToken = authenticationToken_
+        user = WorkerReference(email_, url)
+        user!!.getFromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
     }
 
     fun login(
@@ -53,13 +67,13 @@ class LoginRepository {
             Request.Method.DELETE, serverBuilder.build().toString(), null,
             Response.Listener { successCallback() }, Response.ErrorListener { error -> failCallback(error) }
         )
+
+        // TODO: remove (stored and in-memory) credentials on successful logout
         KeepTime.instance!!.requestQueue.add(logoutRequest)
     }
 
     private fun onLoginFailure(error: VolleyError, callback: (VolleyError) -> Unit) {
-        authenticationToken = null
-        user = null
-
+        removeCredentials()
         callback(error)
     }
 
@@ -67,14 +81,47 @@ class LoginRepository {
         authenticationToken = response.getString("authentication_token")
         user = WorkerReference(response.getString("email"), response.getString("url"))
 
+        // Remove old credentials from local storage
+        try {
+            File(KeepTime.context.filesDir, "CredentialsFile").delete()
+        } catch (e: java.io.IOException) { }
+
+        // Save credentials in encrypted local storage
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        val file = File(KeepTime.context.filesDir, "CredentialsFile")
+        val encryptedFile = EncryptedFile.Builder(
+            file,
+            KeepTime.context,
+            masterKeyAlias,
+            EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+        ).build()
+        encryptedFile.openFileOutput().use { outStream ->
+            ObjectOutputStream(outStream).use { outObjStream ->
+                outObjStream.writeObject(user!!.url.toString())
+                outObjStream.writeObject(user!!.email)
+                outObjStream.writeObject(authenticationToken!!)
+            }
+        }
+
         user!!.getFromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
     }
 
     private fun onWorkerFailure(failCallback: (VolleyError) -> Unit): (VolleyError) -> Any {
-        return { error: VolleyError -> user = null; failCallback(error) }
+        return { error: VolleyError -> removeCredentials(); failCallback(error) }
     }
 
     private fun onWorkerSuccess(successCallback: (Worker) -> Unit): (Worker) -> Any {
         return { worker: Worker -> user = worker; successCallback(worker) }
+    }
+
+    private fun removeCredentials() {
+        authenticationToken = null
+        user = null
+        server = null
+
+        // Remove credentials from local storage
+        try {
+            File(KeepTime.context.filesDir, "CredentialsFile").delete()
+        } catch (e: java.io.IOException) { }
     }
 }

@@ -21,7 +21,7 @@ import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
 import com.google.android.material.snackbar.Snackbar
 import it.uniroma1.keeptime.KeepTime
-import it.uniroma1.keeptime.NavigationDrawer
+import it.uniroma1.keeptime.NavigationDrawerActivity
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 import java.io.File
@@ -148,7 +148,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun endActivity() {
-        startActivity(Intent(this, NavigationDrawer::class.java))
+        startActivity(Intent(this, NavigationDrawerActivity::class.java))
         setResult(Activity.RESULT_OK)
         finish()
     }

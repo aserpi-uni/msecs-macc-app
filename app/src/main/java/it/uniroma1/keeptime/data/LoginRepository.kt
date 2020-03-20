@@ -29,8 +29,7 @@ class LoginRepository {
         username: String, password: String, server_: String,
         successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit
     ) {
-        val serverBuilder = Uri.parse(server_).buildUpon()
-        serverBuilder.scheme("https")
+        val serverBuilder = Uri.parse(if(server_.startsWith("https")) server_ else "https://$server_").buildUpon()
         server = serverBuilder.build().toString()
         serverBuilder.appendPath("workers").appendPath("sign_in.json")
 

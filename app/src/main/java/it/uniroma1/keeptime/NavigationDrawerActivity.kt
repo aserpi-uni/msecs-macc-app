@@ -1,5 +1,6 @@
 package it.uniroma1.keeptime
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -47,6 +48,11 @@ class NavigationDrawerActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.navigation_drawer, menu)
+        menu.findItem(R.id.action_settings).setOnMenuItemClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            true
+        }
+
         return true
     }
 

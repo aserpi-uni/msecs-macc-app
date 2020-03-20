@@ -1,4 +1,4 @@
-package it.uniroma1.keeptime.ui.login
+package it.uniroma1.keeptime
 
 import android.app.Activity
 import android.content.Context
@@ -20,10 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
 import com.google.android.material.snackbar.Snackbar
-import it.uniroma1.keeptime.KeepTime
-import it.uniroma1.keeptime.NavigationDrawerActivity
-import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
+import it.uniroma1.keeptime.ui.login.LoginViewModel
 import java.io.File
 import java.io.ObjectInputStream
 

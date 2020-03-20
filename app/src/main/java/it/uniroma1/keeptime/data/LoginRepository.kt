@@ -4,8 +4,8 @@ import android.net.Uri
 import com.android.volley.*
 import com.android.volley.toolbox.JsonObjectRequest
 import it.uniroma1.keeptime.KeepTime
-import it.uniroma1.keeptime.data.model.LoggedInUser
 import it.uniroma1.keeptime.data.model.Worker
+import it.uniroma1.keeptime.data.model.WorkerReference
 import org.json.JSONObject
 
 /**
@@ -19,8 +19,11 @@ class LoginRepository {
         val isLoggedIn: Boolean
             get() = user != null
 
-        var user: LoggedInUser? = null
+        // TODO: secure
+        var authenticationToken: String? = null
             private set
+
+        var user: WorkerReference? = null
 
         private var server: String? = null
     }
@@ -53,18 +56,25 @@ class LoginRepository {
         KeepTime.instance!!.requestQueue.add(logoutRequest)
     }
 
-    fun onLoginFailure(error: VolleyError, callback: (VolleyError) -> Unit) {
+    private fun onLoginFailure(error: VolleyError, callback: (VolleyError) -> Unit) {
+        authenticationToken = null
         user = null
+
         callback(error)
     }
 
-    fun onLoginSuccess(response: JSONObject, successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit) {
-        user = LoggedInUser(
-            response.getString("authentication_token"),
-            response.getString("email"),
-            response.getString("url")
-        )
+    private fun onLoginSuccess(response: JSONObject, successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit) {
+        authenticationToken = response.getString("authentication_token")
+        user = WorkerReference(response.getString("email"), response.getString("url"))
 
-        user!!.getFromServer((user as LoggedInUser).url, successCallback, failCallback)
+        user!!.getFromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
+    }
+
+    private fun onWorkerFailure(failCallback: (VolleyError) -> Unit): (VolleyError) -> Any {
+        return { error: VolleyError -> user = null; failCallback(error) }
+    }
+
+    private fun onWorkerSuccess(successCallback: (Worker) -> Unit): (Worker) -> Any {
+        return { worker: Worker -> user = worker; successCallback(worker) }
     }
 }

@@ -9,7 +9,9 @@ import it.uniroma1.keeptime.KeepTime
 import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
 import org.json.JSONObject
 
-open class Worker(var bill_rate_cents: Int, currency_: String, var email: String, url_: String) {
+open class Worker(var bill_rate_cents: Int, currency_: String, email: String, url_: String) :
+    WorkerReference(email, url_) {
+
     companion object {
         fun getFromServer(url: String, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
             val loginRequest = AuthenticatedJsonObjectRequest(
@@ -37,7 +39,6 @@ open class Worker(var bill_rate_cents: Int, currency_: String, var email: String
     }
 
     var currency: Currency = Currency.getInstance(currency_)
-    val url: Uri = Uri.parse(url_)
 
     val bill_rate: Number
         get() = bill_rate_cents / 100

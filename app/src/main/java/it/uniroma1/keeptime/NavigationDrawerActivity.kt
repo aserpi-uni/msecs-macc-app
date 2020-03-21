@@ -1,6 +1,5 @@
 package it.uniroma1.keeptime
 
-import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -14,6 +13,7 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import it.uniroma1.keeptime.ui.preferences.SettingsFragmentDirections
 
 class NavigationDrawerActivity : AppCompatActivity() {
 
@@ -48,8 +48,9 @@ class NavigationDrawerActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.navigation_drawer, menu)
-        menu.findItem(R.id.action_settings).setOnMenuItemClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+        menu.findItem(R.id.action_settings)?.setOnMenuItemClickListener {
+            val action = SettingsFragmentDirections.actionOpenSettings()
+            this.findNavController(R.id.nav_host_fragment).navigate(action)
             true
         }
 

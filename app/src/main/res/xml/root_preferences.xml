@@ -53,6 +53,11 @@
     <PreferenceCategory app:title="@string/danger_zone">
 
         <Preference
+            app:key="user_preference"
+            app:summary="@string/user_preference_summary"
+            app:title="@string/menu_user_preferences" />
+
+        <Preference
             app:key="logout"
             app:summary="@string/logout_summary"
             app:title="@string/logout" />

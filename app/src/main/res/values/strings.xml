@@ -31,6 +31,7 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
     <string name="menu_preferences">Settings</string>
+    <string name="menu_user_preferences">Profile settings</string>
 
 
     <!-- Preferences -->
@@ -52,4 +53,7 @@
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <!-- Other preferences -->
+    <string name="user_preference_summary">Tap to open user settings</string>
 </resources>

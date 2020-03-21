@@ -41,8 +41,17 @@
         android:label="@string/menu_send"
         tools:layout="@layout/fragment_send" />
     <fragment
+        android:id="@+id/userPreferenceFragment"
+        android:name="it.uniroma1.keeptime.ui.userpreference.UserPreferenceFragment"
+        android:label="@string/menu_user_preferences"
+        tools:layout="@layout/user_preference_fragment" />
+    <fragment
         android:id="@+id/settingsFragment"
         android:name="it.uniroma1.keeptime.ui.preferences.SettingsFragment"
         android:label="@string/menu_preferences">
+        <action
+            android:id="@+id/action_settingsFragment_to_userPreferenceFragment"
+            app:destination="@id/userPreferenceFragment" />
+    </fragment>
     <action android:id="@+id/action_open_settings" app:destination="@id/settingsFragment" />
 </navigation>

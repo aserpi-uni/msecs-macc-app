@@ -1,6 +1,8 @@
 package it.uniroma1.keeptime.ui.preferences
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -13,6 +15,11 @@ import it.uniroma1.keeptime.data.LoginRepository
 
 // TODO: do not crash when user goes back and request has not finished
 class SettingsFragment : PreferenceFragmentCompat() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
@@ -28,8 +35,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater)
+        val menuItem = menu.findItem(R.id.action_settings)
+        menuItem.isVisible = false
+    }
+
     private fun onLogoutSuccess() { //(activity as SettingsActivity).onLogoutSuccess()
-        }
+    }
 
     private fun onLogoutFailure(error: VolleyError?) {
         val errorMessage = when (error) {

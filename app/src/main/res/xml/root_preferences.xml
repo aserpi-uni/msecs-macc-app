@@ -14,7 +14,9 @@
   ~ limitations under the License.
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/preference_screen">
 
     <PreferenceCategory app:title="@string/messages_header">
 
@@ -45,6 +47,18 @@
             app:summaryOff="@string/attachment_summary_off"
             app:summaryOn="@string/attachment_summary_on"
             app:title="@string/attachment_title" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/danger_zone">
+
+        <Preference
+            app:key="logout"
+            app:summary="@string/logout_summary"
+            app:title="@string/logout" />
+
+        <!-- TODO: find a better way to display progress -->
+        <Preference android:widgetLayout="@layout/progress_bar" />
 
     </PreferenceCategory>
 

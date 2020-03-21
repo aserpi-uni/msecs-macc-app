@@ -39,6 +39,7 @@ class LoginRepository {
                          successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit) {
         authenticationToken = authenticationToken_
         user = WorkerReference(email_, url)
+        server = Regex("(https:\\/\\/[^\\/]*)\\S*").matchEntire(url)!!.groupValues[1]
         user!!.getFromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
     }
 
@@ -63,12 +64,11 @@ class LoginRepository {
         val serverBuilder = Uri.parse(server).buildUpon()
         serverBuilder.appendPath("workers").appendPath("sign_out.json")
 
-        val logoutRequest = JsonObjectRequest(
+        val logoutRequest = AuthenticatedJsonObjectRequest(
             Request.Method.DELETE, serverBuilder.build().toString(), null,
             Response.Listener { successCallback() }, Response.ErrorListener { error -> failCallback(error) }
         )
 
-        // TODO: remove (stored and in-memory) credentials on successful logout
         KeepTime.instance!!.requestQueue.add(logoutRequest)
     }
 
@@ -114,7 +114,7 @@ class LoginRepository {
         return { worker: Worker -> user = worker; successCallback(worker) }
     }
 
-    private fun removeCredentials() {
+    fun removeCredentials() {
         authenticationToken = null
         user = null
         server = null

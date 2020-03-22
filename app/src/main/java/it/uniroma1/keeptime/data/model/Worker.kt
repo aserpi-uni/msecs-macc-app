@@ -5,11 +5,20 @@ import android.net.Uri
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
-import it.uniroma1.keeptime.KeepTime
-import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
+import org.json.JSONArray
 import org.json.JSONObject
 
-open class Worker(var bill_rate_cents: Int, currency_: String, email: String, url_: String) :
+import it.uniroma1.keeptime.KeepTime
+import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
+
+
+open class Worker(
+    var bill_rate_cents: Int,
+    currency_: String,
+    email: String,
+    url_: String,
+    workspaces_: JSONArray
+) :
     WorkerReference(email, url_) {
 
     companion object {
@@ -17,7 +26,7 @@ open class Worker(var bill_rate_cents: Int, currency_: String, email: String, ur
             val loginRequest = AuthenticatedJsonObjectRequest(
                 Request.Method.GET, url, null,
                 Response.Listener { response -> returnWorker(response, successCallback) },
-                Response.ErrorListener { error ->  failCallback(error) })
+                Response.ErrorListener { error -> failCallback(error) })
 
             KeepTime.instance!!.requestQueue.add(loginRequest)
         }
@@ -32,14 +41,17 @@ open class Worker(var bill_rate_cents: Int, currency_: String, email: String, ur
                     response.getInt("bill_rate_cents"),
                     response.getString("currency"),
                     response.getString("email"),
-                    response.getString("url")
+                    response.getString("url"),
+                    response.getJSONArray("workspaces")
                 )
             )
         }
     }
 
-    var currency: Currency = Currency.getInstance(currency_)
-
     val bill_rate: Number
         get() = bill_rate_cents / 100
+
+    var currency: Currency = Currency.getInstance(currency_)
+
+    val workspaces: List<WorkspaceReference> = WorkspaceReference.fromJsonArray(workspaces_)
 }

@@ -57,14 +57,6 @@
             app:summary="@string/user_preference_summary"
             app:title="@string/menu_user_preferences" />
 
-        <Preference
-            app:key="logout"
-            app:summary="@string/logout_summary"
-            app:title="@string/logout" />
-
-        <!-- TODO: find a better way to display progress -->
-        <Preference android:widgetLayout="@layout/progress_bar" />
-
     </PreferenceCategory>
 
 </PreferenceScreen>

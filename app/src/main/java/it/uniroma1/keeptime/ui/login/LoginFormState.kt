@@ -6,4 +6,5 @@ package it.uniroma1.keeptime.ui.login
 data class LoginFormState(val usernameError: Int? = null,
                           val passwordError: Int? = null,
                           val serverError: Int? = null,
-                          val isDataValid: Boolean = false)
+                          val isDataValid: Boolean = false,
+                          val isGoogleSignInPossible: Boolean = false)

@@ -7,6 +7,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import it.uniroma1.keeptime.KeepTime
 import it.uniroma1.keeptime.data.model.Worker
 import it.uniroma1.keeptime.data.model.WorkerReference
@@ -41,6 +42,37 @@ class LoginRepository {
         user = WorkerReference(email_, url)
         server = Regex("(https:\\/\\/[^\\/]*)\\S*").matchEntire(url)!!.groupValues[1]
         user!!.getFromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
+    }
+
+    fun googleOauthId(server_: String, successCallback: (String) -> Unit, failCallback: (VolleyError) -> Unit) {
+        val serverBuilder = Uri.parse(if(server_.startsWith("https")) server_ else "https://$server_").buildUpon()
+        server = serverBuilder.build().toString()
+        serverBuilder.appendPath("google_oauth").appendPath("id")
+
+        val loginRequest = StringRequest(
+            Request.Method.GET, serverBuilder.build().toString(),
+            Response.Listener { response: String -> successCallback(response) },
+            Response.ErrorListener { error -> failCallback(error) })
+
+        KeepTime.instance!!.requestQueue.add(loginRequest)
+    }
+
+    fun googleOauthSignIn(
+        idToken: String,
+        successCallback: (Worker) -> Unit,
+        failCallback: (VolleyError) -> Unit
+    ) {
+        val loginRequest = JsonObjectRequest(
+            Request.Method.POST,
+            Uri.parse(server).buildUpon()
+                .appendPath("google_oauth")
+                .appendPath("sign_in.json")
+                .build().toString(),
+            JSONObject("{\"id_token\":\"$idToken\"}"),
+            Response.Listener { response -> onLoginSuccess(response, successCallback, failCallback) },
+            Response.ErrorListener { error -> onLoginFailure(error, failCallback) })
+
+        KeepTime.instance!!.requestQueue.add(loginRequest)
     }
 
     fun login(

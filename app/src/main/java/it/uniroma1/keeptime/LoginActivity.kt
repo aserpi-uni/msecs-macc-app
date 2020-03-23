@@ -19,6 +19,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.ui.login.LoginViewModel
@@ -38,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
         val username = findViewById<EditText>(R.id.username)
         val password = findViewById<EditText>(R.id.password)
         val server = findViewById<EditText>(R.id.server)
+        val googleLogin = findViewById<SignInButton>(R.id.google_login)
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
 
@@ -72,11 +79,23 @@ class LoginActivity : AppCompatActivity() {
             loginWithSavedCredentials()
         } catch (error: java.io.IOException) { }
 
+        loginViewModel.googleIdResult.observe(this@LoginActivity, Observer {
+            val googleOauthId = it ?: return@Observer
+
+            loading.visibility = View.GONE
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(googleOauthId)
+                .requestEmail()
+                .build()
+            val signInIntent: Intent = GoogleSignIn.getClient(this, gso).signInIntent
+            startActivityForResult(signInIntent, 9001)
+        })
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
-            // disable login button unless both username / password is valid
+            // disable login button unless form is valid
+            googleLogin.isEnabled = loginState.isGoogleSignInPossible
             login.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
@@ -100,7 +119,6 @@ class LoginActivity : AppCompatActivity() {
             if (loginResult.success != null) {
                 endActivity()
             }
-
         })
 
         username.afterTextChanged {
@@ -137,9 +155,17 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        googleLogin.setOnClickListener {
+            val inputManager: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(findViewById<ConstraintLayout>(R.id.loginContainer).windowToken, 0)
+            loading.visibility = View.VISIBLE
+            loginViewModel.googleOauthId(server.text.toString())
+        }
+        googleLogin.isEnabled = false
+
         login.setOnClickListener {
             val inputManager: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputManager.hideSoftInputFromWindow(findViewById<ConstraintLayout>(R.id.loginContainer).getWindowToken(), 0);
+            inputManager.hideSoftInputFromWindow(findViewById<ConstraintLayout>(R.id.loginContainer).windowToken, 0)
             loading.visibility = View.VISIBLE
             loginViewModel.login(username.text.toString(), password.text.toString(), server.text.toString())
         }
@@ -158,6 +184,25 @@ class LoginActivity : AppCompatActivity() {
             Snackbar.LENGTH_SHORT
         ).show()
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 9001) {
+            // The Task returned from this call is always completed, no need to attach a listener.
+            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                loginViewModel.googleOauthSignIn(account?.idToken!!)
+            } catch (e: ApiException) {
+                Snackbar.make(
+                    findViewById(R.id.loginCoordinatorLayout),
+                    R.string.failed_unknown,
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
 }
 
 /**

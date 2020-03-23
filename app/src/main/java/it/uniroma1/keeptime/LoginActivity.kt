@@ -192,6 +192,8 @@ class LoginActivity : AppCompatActivity() {
             val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+                GoogleSignIn.getClient(this, gso).signOut()
                 loginViewModel.googleOauthSignIn(account?.idToken!!)
             } catch (e: ApiException) {
                 Snackbar.make(

@@ -86,7 +86,7 @@ open class Worker(
         /**
          * Retrieves a worker from the server.
          */
-        fun getFromServer(url: String, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
+        fun fromServer(url: String, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
             val loginRequest = AuthenticatedJsonObjectRequest(
                 Request.Method.GET, url, null,
                 Response.Listener { response -> successCallback(Json.parse(serializer(), response.toString())) },
@@ -98,8 +98,8 @@ open class Worker(
         /**
          * Retrieves a worker from the server.
          */
-        fun getFromServer(url: Uri, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
-            getFromServer(url.toString(), successCallback, failCallback)
+        fun fromServer(url: Uri, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
+            fromServer(url.toString(), successCallback, failCallback)
         }
 
     }

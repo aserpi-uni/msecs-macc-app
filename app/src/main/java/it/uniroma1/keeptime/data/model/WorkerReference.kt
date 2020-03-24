@@ -15,7 +15,7 @@ open class WorkerReference(var email: String, @Serializable(with = UriSerializer
     /**
      * Retrieves the worker's attributes from the server.
      */
-    fun getFromServer(successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
-        Worker.getFromServer(url, successCallback, failCallback)
+    fun fromServer(successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
+        Worker.fromServer(url, successCallback, failCallback)
     }
 }

@@ -44,7 +44,7 @@ class LoginRepository {
         authenticationToken = authenticationToken_
         user = WorkerReference(email_, url)
         server = Regex("(https:\\/\\/[^\\/]*)\\S*").matchEntire(url)!!.groupValues[1]
-        user!!.getFromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
+        user!!.fromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
     }
 
     /**
@@ -155,7 +155,7 @@ class LoginRepository {
             }
         }
 
-        user!!.getFromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
+        user!!.fromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
     }
 
     private fun onWorkerFailure(failCallback: (VolleyError) -> Unit): (VolleyError) -> Any {

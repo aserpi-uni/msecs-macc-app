@@ -1,9 +1,12 @@
 package it.uniroma1.keeptime.data.model
 
 import android.net.Uri
+import it.uniroma1.keeptime.data.UriSerializer
+import kotlinx.serialization.Serializable
 import org.json.JSONArray
 
-open class WorkspaceReference(var name: String, url_: String) {
+@Serializable
+open class WorkspaceReference(var name: String, @Serializable(with = UriSerializer::class) val url: Uri) {
 
     companion object {
         fun fromJsonArray(workspacesJson: JSONArray): List<WorkspaceReference> {
@@ -19,5 +22,5 @@ open class WorkspaceReference(var name: String, url_: String) {
         }
     }
 
-    val url = Uri.parse(url_)
+    constructor(name: String, url: String) : this(name, Uri.parse(url))
 }

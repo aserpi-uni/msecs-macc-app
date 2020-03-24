@@ -6,10 +6,15 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
+apply plugin: 'kotlinx-serialization'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
-    kotlinOptions { jvmTarget = "1.8" }
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=kotlinx.serialization.ImplicitReflectionSerializer"
+        jvmTarget = "1.8"
+    }
     defaultConfig {
         applicationId "it.uniroma1.keeptime"
         minSdkVersion 29
@@ -33,6 +38,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0"
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.google.android.material:material:1.1.0'

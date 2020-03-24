@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -70,6 +71,9 @@ class LoginActivity : AppCompatActivity() {
                     val email = it.readObject() as String
                     val authenticationToken = it.readObject() as String
 
+                    window.setFlags(
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                    )
                     LoginRepository().checkCredentials(url, email, authenticationToken,
                         loginViewModel::onLoginSuccess, loginViewModel::onLoginFailure)
                 }
@@ -167,6 +171,9 @@ class LoginActivity : AppCompatActivity() {
             val inputManager: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputManager.hideSoftInputFromWindow(findViewById<ConstraintLayout>(R.id.loginContainer).windowToken, 0)
             loading.visibility = View.VISIBLE
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
             loginViewModel.login(username.text.toString(), password.text.toString(), server.text.toString())
         }
     }
@@ -178,6 +185,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         Snackbar.make(
             findViewById(R.id.loginCoordinatorLayout),
             errorString,

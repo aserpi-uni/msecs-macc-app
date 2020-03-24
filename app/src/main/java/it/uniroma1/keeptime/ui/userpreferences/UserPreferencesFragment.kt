@@ -1,4 +1,4 @@
-package it.uniroma1.keeptime.ui.userpreference
+package it.uniroma1.keeptime.ui.userpreferences
 
 import android.app.Activity
 import android.content.Intent
@@ -14,13 +14,13 @@ import it.uniroma1.keeptime.LoginActivity
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 
-class UserPreferenceFragment : Fragment() {
+class UserPreferencesFragment : Fragment() {
 
     companion object {
-        fun newInstance() = UserPreferenceFragment()
+        fun newInstance() = UserPreferencesFragment()
     }
 
-    private lateinit var viewModel: UserPreferenceViewModel
+    private lateinit var viewModel: UserPreferencesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,12 +31,12 @@ class UserPreferenceFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.user_preference_fragment, container, false)
+        return inflater.inflate(R.layout.user_preferences_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(UserPreferenceViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(UserPreferencesViewModel::class.java)
 
         viewModel.logoutResult.observe(viewLifecycleOwner, Observer {
             val logoutResult = it ?: return@Observer

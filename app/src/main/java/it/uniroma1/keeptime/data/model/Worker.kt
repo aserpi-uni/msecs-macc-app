@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 open class Worker(
-    var bill_rate_cents: Int,
+    var billRateCents: Int,
     var currency: Currency,
     email: String,
     url: Uri,
@@ -36,7 +36,7 @@ open class Worker(
 
         override fun serialize(encoder: Encoder, value: Worker) {
             val compositeOutput = encoder.beginStructure(descriptor)
-            compositeOutput.encodeIntElement(descriptor, 0, value.bill_rate_cents)
+            compositeOutput.encodeIntElement(descriptor, 0, value.billRateCents)
             compositeOutput.encodeSerializableElement(descriptor, 1, CurrencySerializer, value.currency)
             compositeOutput.encodeStringElement(descriptor, 2, value.email)
             compositeOutput.encodeSerializableElement(descriptor, 3, UriSerializer, value.url)
@@ -51,15 +51,15 @@ open class Worker(
 
         override fun deserialize(decoder: Decoder): Worker {
             val dec: CompositeDecoder = decoder.beginStructure(descriptor)
-            var bill_rate_cents: Int? = null
+            var billRateCents: Int? = null
             var currency: Currency? = null
             var email: String? = null
             var url: Uri? = null
             var workspaces: List<WorkspaceReference>? = null
-            loop@ while (true) {
-                when (val i = dec.decodeElementIndex(descriptor)) {
+            loop@ while(true) {
+                when(val i = dec.decodeElementIndex(descriptor)) {
                     CompositeDecoder.READ_DONE -> break@loop
-                    0 -> bill_rate_cents = dec.decodeIntElement(descriptor, 0)
+                    0 -> billRateCents = dec.decodeIntElement(descriptor, 0)
                     1 -> currency = dec.decodeSerializableElement(descriptor, 1, CurrencySerializer)
                     2 -> email = dec.decodeStringElement(descriptor, 2)
                     3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)
@@ -72,7 +72,7 @@ open class Worker(
             }
             dec.endStructure(descriptor)
             return Worker(
-                bill_rate_cents ?: throw MissingFieldException("bill_rate_cents"),
+                billRateCents ?: throw MissingFieldException("bill_rate_cents"),
                 currency ?: throw MissingFieldException("currency"),
                 email ?: throw MissingFieldException("email"),
                 url ?: throw MissingFieldException("url"),
@@ -95,20 +95,6 @@ open class Worker(
 
     }
 
-    constructor(
-        bill_rate_cents: Int,
-        currency: String,
-        email: String,
-        url: String,
-        workspaces: List<WorkspaceReference>
-    ) : this(
-        bill_rate_cents,
-        Currency.getInstance(currency),
-        email,
-        Uri.parse(url),
-        workspaces
-    )
-
-    val bill_rate: Number
-        get() = bill_rate_cents / 100
+    val billRate: Number
+        get() = billRateCents / 100
 }

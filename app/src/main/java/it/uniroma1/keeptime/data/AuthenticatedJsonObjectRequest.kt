@@ -7,7 +7,6 @@ import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.JsonRequest
 import org.json.JSONObject
-import java.nio.charset.Charset
 
 
 class AuthenticatedJsonObjectRequest(

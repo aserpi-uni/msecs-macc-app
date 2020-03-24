@@ -19,7 +19,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
         preferenceManager.findPreference<Preference>("user_preference")?.setOnPreferenceClickListener {
-            findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToUserPreferenceFragment())
+            findNavController().navigate(SettingsFragmentDirections.actionToUserPreferencesFragment())
             true
         }
     }

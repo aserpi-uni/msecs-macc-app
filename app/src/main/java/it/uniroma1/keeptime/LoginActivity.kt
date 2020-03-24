@@ -63,15 +63,15 @@ class LoginActivity : AppCompatActivity() {
 
             // Read credentials from encrypted local storage
             encryptedFile.openFileInput().use { inStream ->
-                ObjectInputStream(inStream).use { objInStream ->
+                ObjectInputStream(inStream).use {
                     loading.visibility = View.VISIBLE
 
-                    val url_ = objInStream.readObject() as String
-                    val email_ = objInStream.readObject() as String
-                    val authenticationToken_ = objInStream.readObject() as String
+                    val url = it.readObject() as String
+                    val email = it.readObject() as String
+                    val authenticationToken = it.readObject() as String
 
-                    LoginRepository().checkCredentials(url_,email_, authenticationToken_,
-                        loginViewModel::onLoginSuccess, loginViewModel::onLoginFailed)
+                    LoginRepository().checkCredentials(url, email, authenticationToken,
+                        loginViewModel::onLoginSuccess, loginViewModel::onLoginFailure)
                 }
             }
         }
@@ -98,13 +98,13 @@ class LoginActivity : AppCompatActivity() {
             googleLogin.isEnabled = loginState.isGoogleSignInPossible
             login.isEnabled = loginState.isDataValid
 
-            if (loginState.usernameError != null) {
+            if(loginState.usernameError != null) {
                 username.error = getString(loginState.usernameError)
             }
-            if (loginState.passwordError != null) {
+            if(loginState.passwordError != null) {
                 password.error = getString(loginState.passwordError)
             }
-            if (loginState.serverError != null) {
+            if(loginState.serverError != null) {
                 server.error = getString(loginState.serverError)
             }
         })
@@ -113,10 +113,10 @@ class LoginActivity : AppCompatActivity() {
             val loginResult = it ?: return@Observer
 
             loading.visibility = View.GONE
-            if (loginResult.error != null) {
+            if(loginResult.error != null) {
                 showLoginFailed(loginResult.error)
             }
-            if (loginResult.success != null) {
+            if(loginResult.success != null) {
                 endActivity()
             }
         })

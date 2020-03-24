@@ -1,4 +1,4 @@
-package it.uniroma1.keeptime.ui.userpreference
+package it.uniroma1.keeptime.ui.userpreferences
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,7 +7,7 @@ import com.android.volley.*
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 
-class UserPreferenceViewModel : ViewModel() {
+class UserPreferencesViewModel : ViewModel() {
 
     // First element is return status (success, failure), second is possible error message
     private val _logoutResult = MutableLiveData<Pair<Boolean, Int?>>()

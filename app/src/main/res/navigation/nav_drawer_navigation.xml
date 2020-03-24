@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
+    android:id="@+id/nav_drawer_navigation"
     app:startDestination="@+id/nav_home">
 
     <fragment
@@ -41,17 +41,17 @@
         android:label="@string/menu_send"
         tools:layout="@layout/fragment_send" />
     <fragment
-        android:id="@+id/userPreferenceFragment"
-        android:name="it.uniroma1.keeptime.ui.userpreference.UserPreferenceFragment"
+        android:id="@+id/userPreferencesFragment"
+        android:name="it.uniroma1.keeptime.ui.userpreferences.UserPreferencesFragment"
         android:label="@string/menu_user_preferences"
-        tools:layout="@layout/user_preference_fragment" />
+        tools:layout="@layout/user_preferences_fragment" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="it.uniroma1.keeptime.ui.preferences.SettingsFragment"
         android:label="@string/menu_preferences">
         <action
-            android:id="@+id/action_settingsFragment_to_userPreferenceFragment"
-            app:destination="@id/userPreferenceFragment" />
+            android:id="@+id/action_to_userPreferencesFragment"
+            app:destination="@id/userPreferencesFragment" />
     </fragment>
     <action android:id="@+id/action_open_settings" app:destination="@id/settingsFragment" />
 </navigation>

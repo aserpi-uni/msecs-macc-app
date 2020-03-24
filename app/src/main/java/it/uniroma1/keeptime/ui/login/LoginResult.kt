@@ -5,7 +5,4 @@ import it.uniroma1.keeptime.data.model.Worker
 /**
  * Authentication result : success (user details) or error message.
  */
-data class LoginResult(
-        val success: Worker? = null,
-        val error: Int? = null
-)
+data class LoginResult(val success: Worker? = null, val error: Int? = null)

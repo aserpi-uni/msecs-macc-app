@@ -24,15 +24,15 @@ class LoginViewModel : ViewModel() {
     private var loginRepository = LoginRepository()
 
     fun googleOauthId(server: String) {
-        loginRepository.googleOauthId(server, { _googleIdResult.value = it }, ::onLoginFailed)
+        loginRepository.googleOauthId(server, { _googleIdResult.value = it }, ::onLoginFailure)
     }
 
     fun googleOauthSignIn(token: String) {
-        loginRepository.googleOauthSignIn(token, ::onLoginSuccess, ::onLoginFailed)
+        loginRepository.googleOauthSignIn(token, ::onLoginSuccess, ::onLoginFailure)
     }
 
     fun login(username: String, password: String, server: String) {
-        loginRepository.login(username, password, server, ::onLoginSuccess, ::onLoginFailed)
+        loginRepository.login(username, password, server, ::onLoginSuccess, ::onLoginFailure)
     }
 
     fun loginDataChanged(username: String, password: String, server: String) {
@@ -41,13 +41,13 @@ class LoginViewModel : ViewModel() {
             serverError =  R.string.invalid_server
         }
 
-        if (!isUserNameValid(username)) {
+        if(!isUserNameValid(username)) {
             _loginForm.value = LoginFormState(
                 isGoogleSignInPossible = serverError == null,
                 serverError = serverError,
                 usernameError = R.string.invalid_username
             )
-        } else if (!isPasswordValid(password)) {
+        } else if(!isPasswordValid(password)) {
             _loginForm.value = LoginFormState(
                 isGoogleSignInPossible = serverError == null,
                 passwordError = R.string.invalid_password,
@@ -60,22 +60,20 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    // A placeholder username validation check
     private fun isUserNameValid(username: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(username).matches()
     }
 
-    // A placeholder password validation check
+    // TODO
     private fun isPasswordValid(password: String): Boolean {
         return password.length > 5
     }
 
-    // A placeholder server validation check
     private fun isServerValid(server: String): Boolean {
         return Patterns.WEB_URL.matcher(server).matches()
     }
 
-    fun onLoginFailed(error: VolleyError) {
+    fun onLoginFailure(error: VolleyError) {
         val errorMessage = when(error) {
             is NoConnectionError, is TimeoutError -> R.string.failed_no_response
             is AuthFailureError -> R.string.failed_wrong_credentials

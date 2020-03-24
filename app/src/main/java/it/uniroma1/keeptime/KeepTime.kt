@@ -5,19 +5,27 @@ import android.content.Context
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 
-
+/**
+ * Application class.
+ *
+ * @property requestQueue Volley queue used for all network operations
+ */
 class KeepTime : Application() {
-    override fun onCreate() {
-        instance = this
-        super.onCreate()
-    }
-
+    /**
+     * @property context Application context
+     * @property instance The unique instance of KeepTime
+     */
     companion object {
         var instance: KeepTime? = null
             private set
 
         val context: Context
             get() = instance!!
+    }
+
+    override fun onCreate() {
+        instance = this
+        super.onCreate()
     }
 
     val requestQueue: RequestQueue by lazy {

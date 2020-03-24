@@ -14,6 +14,9 @@ import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
+/**
+ * Class for workers.
+ */
 @Serializable
 open class Worker(
     var billRateCents: Int,
@@ -80,6 +83,9 @@ open class Worker(
             )
         }
 
+        /**
+         * Retrieves a worker from the server.
+         */
         fun getFromServer(url: String, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
             val loginRequest = AuthenticatedJsonObjectRequest(
                 Request.Method.GET, url, null,
@@ -89,6 +95,9 @@ open class Worker(
             KeepTime.instance!!.requestQueue.add(loginRequest)
         }
 
+        /**
+         * Retrieves a worker from the server.
+         */
         fun getFromServer(url: Uri, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
             getFromServer(url.toString(), successCallback, failCallback)
         }

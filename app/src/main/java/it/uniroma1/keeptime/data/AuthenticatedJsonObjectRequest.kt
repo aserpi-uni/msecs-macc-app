@@ -9,6 +9,16 @@ import com.android.volley.toolbox.JsonRequest
 import org.json.JSONObject
 
 
+/**
+ * Creates a new authenticated request containing JSON payload.
+ *
+ * @param method the HTTP method to use
+ * @param url URL to fetch the JSON from
+ * @param jsonRequest A JSONObject to post with the request.
+ * Null indicates no parameters will be posted along with request.
+ * @param listener Listener to receive the JSON response
+ * @param errorListener Error listener, or null to ignore errors
+ */
 class AuthenticatedJsonObjectRequest(
     method: Int,
     url: String,

@@ -36,6 +36,9 @@ class LoginRepository {
         private var server: String? = null
     }
 
+    /**
+     * Checks stored credentials to see if they are still valid.
+     */
     fun checkCredentials(url: String, email_: String, authenticationToken_: String,
                          successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit) {
         authenticationToken = authenticationToken_
@@ -44,6 +47,12 @@ class LoginRepository {
         user!!.getFromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
     }
 
+    /**
+     * Asks the server for its Google OAuth
+     * [client ID](https://developers.google.com/identity/sign-in/android/backend-auth#send-the-id-token-to-your-server).
+     *
+     * @see googleOauthSignIn
+     */
     fun googleOauthId(server_: String, successCallback: (String) -> Unit, failCallback: (VolleyError) -> Unit) {
         val serverBuilder = Uri.parse(if(server_.startsWith("https")) server_ else "https://$server_").buildUpon()
         server = serverBuilder.build().toString()
@@ -57,6 +66,11 @@ class LoginRepository {
         KeepTime.instance!!.requestQueue.add(loginRequest)
     }
 
+    /**
+     * Sends the Google [idToken](https://developers.google.com/identity/sign-in/android/backend-auth)
+     * retrieved by [LoginActivity][it.uniroma1.keeptime.LoginActivity] to the server
+     * in order to get an authentication token.
+     */
     fun googleOauthSignIn(
         idToken: String,
         successCallback: (Worker) -> Unit,
@@ -75,6 +89,9 @@ class LoginRepository {
         KeepTime.instance!!.requestQueue.add(loginRequest)
     }
 
+    /**
+     * Logs a user in using email address and password.
+     */
     fun login(
         username: String, password: String, server_: String,
         successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit
@@ -92,6 +109,9 @@ class LoginRepository {
         KeepTime.instance!!.requestQueue.add(loginRequest)
     }
 
+    /**
+     * Logs a user out.
+     */
     fun logout(successCallback: () -> Unit, failCallback: (VolleyError) -> Unit) {
         val serverBuilder = Uri.parse(server).buildUpon()
         serverBuilder.appendPath("workers").appendPath("sign_out.json")
@@ -146,6 +166,9 @@ class LoginRepository {
         return { worker: Worker -> user = worker; successCallback(worker) }
     }
 
+    /**
+     * Removes stored credentials.
+     */
     fun removeCredentials() {
         authenticationToken = null
         user = null

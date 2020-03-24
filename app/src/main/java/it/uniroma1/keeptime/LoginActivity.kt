@@ -112,8 +112,8 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
-            loading.visibility = View.GONE
             if(loginResult.error != null) {
+                loading.visibility = View.GONE
                 showLoginFailed(loginResult.error)
             }
             if(loginResult.success != null) {

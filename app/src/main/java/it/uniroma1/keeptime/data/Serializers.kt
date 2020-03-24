@@ -4,6 +4,9 @@ import android.icu.util.Currency
 import android.net.Uri
 import kotlinx.serialization.*
 
+/**
+ * Serializer for [Uri].
+ */
 @Serializer(forClass = Uri::class)
 object UriSerializer: KSerializer<Uri> {
     override val descriptor: SerialDescriptor = PrimitiveDescriptor("Uri", PrimitiveKind.STRING)
@@ -17,6 +20,9 @@ object UriSerializer: KSerializer<Uri> {
     }
 }
 
+/**
+ * Serializer for [Currency].
+ */
 @Serializer(forClass = Currency::class)
 object CurrencySerializer: KSerializer<Currency> {
     override val descriptor: SerialDescriptor = PrimitiveDescriptor("Currency", PrimitiveKind.STRING)

@@ -5,8 +5,6 @@ import android.net.Uri
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
-import org.json.JSONArray
-import org.json.JSONObject
 
 import it.uniroma1.keeptime.KeepTime
 import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
@@ -14,6 +12,7 @@ import it.uniroma1.keeptime.data.CurrencySerializer
 import it.uniroma1.keeptime.data.UriSerializer
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 
 @Serializable
 open class Worker(
@@ -84,7 +83,7 @@ open class Worker(
         fun getFromServer(url: String, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
             val loginRequest = AuthenticatedJsonObjectRequest(
                 Request.Method.GET, url, null,
-                Response.Listener { response -> returnWorker(response, successCallback) },
+                Response.Listener { response -> successCallback(Json.parse(serializer(), response.toString())) },
                 Response.ErrorListener { error -> failCallback(error) })
 
             KeepTime.instance!!.requestQueue.add(loginRequest)
@@ -94,26 +93,7 @@ open class Worker(
             getFromServer(url.toString(), successCallback, failCallback)
         }
 
-        private fun returnWorker(response: JSONObject, callback: (Worker) -> Any) {
-            callback(
-                Worker(
-                    response.getInt("bill_rate_cents"),
-                    response.getString("currency"),
-                    response.getString("email"),
-                    response.getString("url"),
-                    response.getJSONArray("workspaces")
-                )
-            )
-        }
     }
-
-    constructor(bill_rate_cents: Int, currency: String, email: String, url: String, workspaces: JSONArray) : this(
-        bill_rate_cents,
-        Currency.getInstance(currency),
-        email,
-        Uri.parse(url),
-        WorkspaceReference.fromJsonArray(workspaces)
-    )
 
     constructor(
         bill_rate_cents: Int,

@@ -13,6 +13,7 @@ android {
     buildToolsVersion "29.0.3"
     kotlinOptions {
         freeCompilerArgs += "-Xopt-in=kotlinx.serialization.ImplicitReflectionSerializer"
+        freeCompilerArgs += "-Xopt-in=kotlinx.serialization.UnstableDefault"
         jvmTarget = "1.8"
     }
     defaultConfig {

@@ -124,6 +124,20 @@ class LoginRepository {
         KeepTime.instance!!.requestQueue.add(logoutRequest)
     }
 
+    /**
+     * Removes stored credentials.
+     */
+    fun removeCredentials() {
+        authenticationToken = null
+        user = null
+        server = null
+
+        // Remove credentials from local storage
+        try {
+            File(KeepTime.context.filesDir, "CredentialsFile").delete()
+        } catch (e: java.io.IOException) { }
+    }
+
     private fun onLoginFailure(error: VolleyError, callback: (VolleyError) -> Unit) {
         removeCredentials()
         callback(error)
@@ -164,19 +178,5 @@ class LoginRepository {
 
     private fun onWorkerSuccess(successCallback: (Worker) -> Unit): (Worker) -> Any {
         return { worker: Worker -> user = worker; successCallback(worker) }
-    }
-
-    /**
-     * Removes stored credentials.
-     */
-    fun removeCredentials() {
-        authenticationToken = null
-        user = null
-        server = null
-
-        // Remove credentials from local storage
-        try {
-            File(KeepTime.context.filesDir, "CredentialsFile").delete()
-        } catch (e: java.io.IOException) { }
     }
 }

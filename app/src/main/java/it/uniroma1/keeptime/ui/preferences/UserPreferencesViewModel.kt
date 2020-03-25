@@ -1,4 +1,4 @@
-package it.uniroma1.keeptime.ui.userpreferences
+package it.uniroma1.keeptime.ui.preferences
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

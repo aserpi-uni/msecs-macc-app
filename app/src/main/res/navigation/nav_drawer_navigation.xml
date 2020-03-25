@@ -42,7 +42,7 @@
         tools:layout="@layout/fragment_send" />
     <fragment
         android:id="@+id/userPreferencesFragment"
-        android:name="it.uniroma1.keeptime.ui.userpreferences.UserPreferencesFragment"
+        android:name="it.uniroma1.keeptime.ui.preferences.UserPreferencesFragment"
         android:label="@string/menu_user_preferences"
         tools:layout="@layout/user_preferences_fragment" />
     <fragment

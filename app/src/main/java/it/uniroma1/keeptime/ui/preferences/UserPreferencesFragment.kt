@@ -1,4 +1,4 @@
-package it.uniroma1.keeptime.ui.userpreferences
+package it.uniroma1.keeptime.ui.preferences
 
 import android.app.Activity
 import android.content.Intent

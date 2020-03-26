@@ -1,5 +1,6 @@
 package it.uniroma1.keeptime.data
 
+import android.net.Uri
 import com.android.volley.AuthFailureError
 import com.android.volley.NetworkResponse
 import com.android.volley.Response
@@ -26,6 +27,17 @@ class AuthenticatedJsonObjectRequest(
     listener: Response.Listener<JSONObject>,
     errorListener: Response.ErrorListener
 ) : JsonObjectRequest(method, url, jsonRequest, listener, errorListener) {
+
+    /**
+     * @see AuthenticatedJsonObjectRequest
+     */
+    constructor(
+        method: Int,
+        url: Uri,
+        jsonRequest: JSONObject?,
+        listener: Response.Listener<JSONObject>,
+        errorListener: Response.ErrorListener
+    ) : this(method, url.toString(), jsonRequest, listener, errorListener)
 
     @Throws(AuthFailureError::class)
     override fun getHeaders(): MutableMap<String, String>? {

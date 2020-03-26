@@ -14,6 +14,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
         freeCompilerArgs += "-Xopt-in=kotlinx.serialization.ImplicitReflectionSerializer"
         freeCompilerArgs += "-Xopt-in=kotlinx.serialization.UnstableDefault"
         jvmTarget = "1.8"

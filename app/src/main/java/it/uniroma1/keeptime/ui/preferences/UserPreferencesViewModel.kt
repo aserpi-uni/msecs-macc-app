@@ -8,6 +8,7 @@ import com.android.volley.*
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.data.model.Worker
+import kotlinx.coroutines.launch
 
 class UserPreferencesViewModel : ViewModel() {
 
@@ -70,25 +71,29 @@ class UserPreferencesViewModel : ViewModel() {
 
     fun logout() {
         _busy.value = true
-        LoginRepository().logout(::onLogoutSuccess, ::onLogoutFailure)
+        viewModelScope.launch {
+            try {
+                LoginRepository().logout()
+                onLogoutSuccess()
+            } catch (error: VolleyError) {
+                val errorMessage = when(error) {
+                    is NoConnectionError, is TimeoutError -> R.string.failed_no_response
+                    is NetworkError -> R.string.failed_network
+                    else -> null
+                }
+
+                if(errorMessage == null) {
+                    onLogoutSuccess()
+                } else {
+                    _busy.value = false
+                    _logoutResult.value = Pair(false, errorMessage)
+                }
+            }
+        }
     }
 
     fun updateUser(v: View) {
         // TODO
-    }
-
-    private fun onLogoutFailure(error: VolleyError) {
-        val errorMessage = when(error) {
-            is NoConnectionError, is TimeoutError -> R.string.failed_no_response
-            is NetworkError -> R.string.failed_network
-            else -> null
-        }
-
-        if(errorMessage == null) onLogoutSuccess()
-        else {
-            _busy.value = false
-            _logoutResult.value = Pair(false, errorMessage)
-        }
     }
 
     private fun onLogoutSuccess() {

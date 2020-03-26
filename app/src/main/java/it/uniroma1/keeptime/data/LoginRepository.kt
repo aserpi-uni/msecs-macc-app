@@ -14,6 +14,8 @@ import it.uniroma1.keeptime.data.model.WorkerReference
 import org.json.JSONObject
 import java.io.File
 import java.io.ObjectOutputStream
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 
 /**
@@ -112,16 +114,23 @@ class LoginRepository {
     /**
      * Logs a user out.
      */
-    fun logout(successCallback: () -> Unit, failCallback: (VolleyError) -> Unit) {
+    suspend fun logout() {
         val serverBuilder = Uri.parse(server).buildUpon()
         serverBuilder.appendPath("workers").appendPath("sign_out.json")
 
-        val logoutRequest = AuthenticatedJsonObjectRequest(
-            Request.Method.DELETE, serverBuilder.build().toString(), null,
-            Response.Listener { successCallback() }, Response.ErrorListener { error -> failCallback(error) }
-        )
+        suspendCancellableCoroutine<Unit> { continuation ->
+            val logoutRequest = AuthenticatedJsonObjectRequest(
+                Request.Method.DELETE, serverBuilder.build().toString(), null,
+                Response.Listener { continuation.resume(Unit) { } },
+                Response.ErrorListener { error -> continuation.resumeWithException(error) }
+            )
 
-        KeepTime.instance!!.requestQueue.add(logoutRequest)
+            KeepTime.instance!!.requestQueue.add(logoutRequest)
+
+            continuation.invokeOnCancellation {
+                logoutRequest.cancel()
+            }
+        }
     }
 
     /**

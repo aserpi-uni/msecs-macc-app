@@ -73,7 +73,7 @@ class UserPreferencesViewModel : ViewModel() {
         _busy.value = true
         viewModelScope.launch {
             try {
-                LoginRepository().logout()
+                LoginRepository.logout()
                 onLogoutSuccess()
             } catch (error: VolleyError) {
                 val errorMessage = when(error) {

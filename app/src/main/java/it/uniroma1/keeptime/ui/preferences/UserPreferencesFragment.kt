@@ -53,7 +53,7 @@ class UserPreferencesFragment : Fragment() {
             val logoutResult = it ?: return@Observer
 
             if(logoutResult.first) {
-                LoginRepository().removeCredentials()
+                LoginRepository.removeCredentials()
                 val loginIntent = Intent(context, LoginActivity::class.java)
                 loginIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(loginIntent)

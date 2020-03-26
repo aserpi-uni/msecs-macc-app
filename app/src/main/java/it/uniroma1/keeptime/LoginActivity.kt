@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
                     window.setFlags(
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                     )
-                    LoginRepository().checkCredentials(url, email, authenticationToken,
+                    LoginRepository.checkCredentials(url, email, authenticationToken,
                         loginViewModel::onLoginSuccess, loginViewModel::onLoginFailure)
                 }
             }

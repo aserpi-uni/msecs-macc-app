@@ -21,7 +21,7 @@ class LoginViewModel : ViewModel() {
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    private var loginRepository = LoginRepository()
+    private var loginRepository = LoginRepository
 
     fun googleOauthId(server: String) {
         loginRepository.googleOauthId(server, { _googleIdResult.value = it }, ::onLoginFailure)

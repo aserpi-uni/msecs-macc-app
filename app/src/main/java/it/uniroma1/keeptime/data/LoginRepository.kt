@@ -23,20 +23,17 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  * maintains an in-memory cache of login status and user credentials information.
  */
 
-class LoginRepository {
-
-    companion object {
-        val isLoggedIn: Boolean
-            get() = user != null
+object LoginRepository {
+    val isLoggedIn: Boolean
+        get() = user != null
 
         // TODO: secure
         var authenticationToken: String? = null
             private set
 
-        var user: WorkerReference? = null
+    var user: WorkerReference? = null
 
-        private var server: String? = null
-    }
+    private var server: String? = null
 
     /**
      * Checks stored credentials to see if they are still valid.

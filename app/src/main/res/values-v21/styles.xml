@@ -15,4 +15,9 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+    <style name="AppTheme.ProgressBar.Horizontal" parent="@android:style/Widget.Material.ProgressBar.Horizontal">
+        <item name="android:translateY">-6</item>
+    </style>
+
 </resources>

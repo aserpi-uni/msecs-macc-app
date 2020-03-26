@@ -19,7 +19,7 @@ import kotlinx.serialization.json.Json
  */
 @Serializable
 open class Worker(
-    var billRateCents: Int,
+    var billRate: Double,
     var currency: Currency,
     email: String,
     url: Uri,
@@ -39,7 +39,7 @@ open class Worker(
 
         override fun serialize(encoder: Encoder, value: Worker) {
             val compositeOutput = encoder.beginStructure(descriptor)
-            compositeOutput.encodeIntElement(descriptor, 0, value.billRateCents)
+            compositeOutput.encodeIntElement(descriptor, 0, (value.billRate * 100).toInt())
             compositeOutput.encodeSerializableElement(descriptor, 1, CurrencySerializer, value.currency)
             compositeOutput.encodeStringElement(descriptor, 2, value.email)
             compositeOutput.encodeSerializableElement(descriptor, 3, UriSerializer, value.url)
@@ -54,7 +54,7 @@ open class Worker(
 
         override fun deserialize(decoder: Decoder): Worker {
             val dec: CompositeDecoder = decoder.beginStructure(descriptor)
-            var billRateCents: Int? = null
+            var billRate: Double? = null
             var currency: Currency? = null
             var email: String? = null
             var url: Uri? = null
@@ -62,7 +62,7 @@ open class Worker(
             loop@ while(true) {
                 when(val i = dec.decodeElementIndex(descriptor)) {
                     CompositeDecoder.READ_DONE -> break@loop
-                    0 -> billRateCents = dec.decodeIntElement(descriptor, 0)
+                    0 -> billRate = dec.decodeIntElement(descriptor, 0) / 100.0
                     1 -> currency = dec.decodeSerializableElement(descriptor, 1, CurrencySerializer)
                     2 -> email = dec.decodeStringElement(descriptor, 2)
                     3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)
@@ -75,7 +75,7 @@ open class Worker(
             }
             dec.endStructure(descriptor)
             return Worker(
-                billRateCents ?: throw MissingFieldException("bill_rate_cents"),
+                billRate ?: throw MissingFieldException("bill_rate_cents"),
                 currency ?: throw MissingFieldException("currency"),
                 email ?: throw MissingFieldException("email"),
                 url ?: throw MissingFieldException("url"),
@@ -101,9 +101,5 @@ open class Worker(
         fun fromServer(url: Uri, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
             fromServer(url.toString(), successCallback, failCallback)
         }
-
     }
-
-    val billRate: Number
-        get() = billRateCents / 100
 }

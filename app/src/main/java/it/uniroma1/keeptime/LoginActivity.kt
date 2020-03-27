@@ -176,6 +176,11 @@ class LoginActivity : AppCompatActivity() {
             )
             loginViewModel.login(username.text.toString(), password.text.toString(), server.text.toString())
         }
+
+        val logoutMessage = intent.getIntExtra("message", -1)
+        if(logoutMessage != -1) {
+            Snackbar.make(findViewById(R.id.loginCoordinatorLayout), logoutMessage, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun endActivity() {

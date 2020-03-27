@@ -60,7 +60,7 @@ class UserPreferencesFragment : Fragment() {
         })
 
         viewModel.logoutMessage.observe(viewLifecycleOwner, Observer {
-            val logoutMessage = it ?: return@Observer
+            val logoutMessage: Int = it ?: return@Observer
 
             LoginRepository.removeCredentials()
             val loginIntent = Intent(context, LoginActivity::class.java)

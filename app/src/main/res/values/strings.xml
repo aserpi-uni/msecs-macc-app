@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">KeepTime</string>
     <string name="cancel">Cancel</string>
+    <string name="failed_invalid_attribute">One or more fields are invalid</string>
     <string name="failed_network">Network error</string>
     <string name="failed_no_response">Cannot connect to website</string>
     <string name="failed_server">Server error</string>
+    <string name="failed_unchanged">The resource is unchanged</string>
     <string name="failed_unknown">Unknown error</string>
     <string name="save">Save</string>
 
@@ -44,5 +46,6 @@
     <string name="prompt_currency">Currency</string>
     <string name="prompt_password_confirmation">Password confirmation</string>
     <string name="select_currency">Select a currency</string>
+    <string name="success_update">Resource successfully updated</string>
     <string name="user_preference_summary">Tap to open user settings</string>
 </resources>

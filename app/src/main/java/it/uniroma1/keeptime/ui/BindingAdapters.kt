@@ -9,6 +9,13 @@ fun TextInputLayout.bindErrorMessage(errorMessage: Int?) {
     this.error = if(errorMessage == null) null else this.context.getString(errorMessage)
 }
 
+@BindingAdapter("focused")
+fun View.focused(focused: Boolean) {
+    if(focused)
+        this.requestFocus()
+    else
+        this.clearFocus()
+}
 
 @BindingAdapter("visible")
 fun View.visibleOrGone(visible: Boolean) {

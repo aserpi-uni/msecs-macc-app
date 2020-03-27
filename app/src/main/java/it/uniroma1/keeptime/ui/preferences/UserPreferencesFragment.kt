@@ -1,10 +1,12 @@
 package it.uniroma1.keeptime.ui.preferences
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.icu.util.Currency
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -49,6 +51,14 @@ class UserPreferencesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.busy.observe(viewLifecycleOwner, Observer {
+            val busy = it ?: return@Observer
+            if(! busy) return@Observer
+
+            val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputManager?.hideSoftInputFromWindow(view.windowToken, 0)
+        })
+
         viewModel.logoutResult.observe(viewLifecycleOwner, Observer {
             val logoutResult = it ?: return@Observer
 
@@ -63,6 +73,17 @@ class UserPreferencesFragment : Fragment() {
             } else {
                 Snackbar.make(view, logoutResult.second!!, Snackbar.LENGTH_SHORT).show()
             }
+        })
+
+        viewModel.message.observe(viewLifecycleOwner, Observer {
+            val message = it ?: return@Observer
+
+            var snackbar: Snackbar? = null
+            if(message is Int)
+                snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+            else if(message is String)
+                snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+            snackbar?.show()
         })
 
         val allCurrencies = Currency.getAvailableCurrencies().toList().sortedBy { it.displayName }

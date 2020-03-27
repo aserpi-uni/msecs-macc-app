@@ -4,15 +4,16 @@ import android.icu.util.Currency
 import android.net.Uri
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.VolleyError
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.serialization.*
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 
 import it.uniroma1.keeptime.KeepTime
 import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
 import it.uniroma1.keeptime.data.CurrencySerializer
 import it.uniroma1.keeptime.data.UriSerializer
-import kotlinx.serialization.*
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
 
 /**
  * Class for workers.
@@ -86,20 +87,22 @@ open class Worker(
         /**
          * Retrieves a worker from the server.
          */
-        fun fromServer(url: String, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
-            val loginRequest = AuthenticatedJsonObjectRequest(
+        suspend fun fromServer(url: String): Worker = suspendCancellableCoroutine { cont ->
+            val request = AuthenticatedJsonObjectRequest(
                 Request.Method.GET, url, null,
-                Response.Listener { response -> successCallback(Json.parse(serializer(), response.toString())) },
-                Response.ErrorListener { error -> failCallback(error) })
+                Response.Listener { cont.resume(Json.parse(serializer(), it.toString())) { } },
+                Response.ErrorListener { cont.resumeWithException(it) })
 
-            KeepTime.instance!!.requestQueue.add(loginRequest)
+            KeepTime.instance!!.requestQueue.add(request)
+
+            cont.invokeOnCancellation {
+                request.cancel()
+            }
         }
 
         /**
          * Retrieves a worker from the server.
          */
-        fun fromServer(url: Uri, successCallback: (Worker) -> Any, failCallback: (VolleyError) -> Any) {
-            fromServer(url.toString(), successCallback, failCallback)
-        }
+        suspend fun fromServer(url: Uri): Worker = fromServer(url.toString())
     }
 }

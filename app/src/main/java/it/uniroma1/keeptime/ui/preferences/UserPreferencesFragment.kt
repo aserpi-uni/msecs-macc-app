@@ -59,20 +59,17 @@ class UserPreferencesFragment : Fragment() {
             inputManager?.hideSoftInputFromWindow(view.windowToken, 0)
         })
 
-        viewModel.logoutResult.observe(viewLifecycleOwner, Observer {
-            val logoutResult = it ?: return@Observer
+        viewModel.logoutMessage.observe(viewLifecycleOwner, Observer {
+            val logoutMessage = it ?: return@Observer
 
-            if(logoutResult.first) {
-                LoginRepository.removeCredentials()
-                val loginIntent = Intent(context, LoginActivity::class.java)
-                loginIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(loginIntent)
+            LoginRepository.removeCredentials()
+            val loginIntent = Intent(context, LoginActivity::class.java)
+            loginIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            loginIntent.putExtra("message", logoutMessage)
+            startActivity(loginIntent)
 
-                activity?.setResult(Activity.RESULT_OK)
-                activity?.finish()
-            } else {
-                Snackbar.make(view, logoutResult.second!!, Snackbar.LENGTH_SHORT).show()
-            }
+            activity?.setResult(Activity.RESULT_OK)
+            activity?.finish()
         })
 
         viewModel.message.observe(viewLifecycleOwner, Observer {

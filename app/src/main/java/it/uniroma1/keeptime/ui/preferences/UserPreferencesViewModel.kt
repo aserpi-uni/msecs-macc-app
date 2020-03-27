@@ -75,16 +75,15 @@ class UserPreferencesViewModel : ViewModel() {
     private val _busy = MutableLiveData(false)
     val busy: LiveData<Boolean> = _busy
 
-    // First element is return status (success, failure), second is possible error message
-    private val _logoutResult = MutableLiveData<Pair<Boolean, Int?>>()
-    val logoutResult: LiveData<Pair<Boolean, Int?>> = _logoutResult
+    private val _logoutMessage = MutableLiveData<Int>()
+    val logoutMessage: LiveData<Int> = _logoutMessage
 
     fun logout() {
         _busy.value = true
         viewModelScope.launch {
             try {
                 LoginRepository.logout()
-                onLogoutSuccess()
+                _logoutMessage.value = R.string.success_logout
             } catch (error: VolleyError) {
                 val errorMessage = when(error) {
                     is NoConnectionError, is TimeoutError -> R.string.failed_no_response
@@ -93,10 +92,10 @@ class UserPreferencesViewModel : ViewModel() {
                 }
 
                 if(errorMessage == null) {
-                    onLogoutSuccess()
+                    _logoutMessage.value = R.string.success_logout
                 } else {
                     _busy.value = false
-                    _logoutResult.value = Pair(false, errorMessage)
+                    _message.value = errorMessage
                 }
             }
         }
@@ -119,7 +118,7 @@ class UserPreferencesViewModel : ViewModel() {
                 _busy.value = false
                 _message.value = R.string.success_update
             } catch (_: AuthFailureError) {
-                navigateToLogin(R.string.failed_wrong_credentials)
+                _logoutMessage.value = R.string.failed_wrong_credentials
             } catch (error: VolleyError) {
                 val errorMessage =
                     if (error.isUnprocessableEntity()) R.string.failed_invalid_attribute else when (error) {
@@ -133,14 +132,6 @@ class UserPreferencesViewModel : ViewModel() {
                 _message.value = errorMessage
             }
         }
-    }
-
-    private fun navigateToLogin(message: Int?) {
-        // TODO
-    }
-
-    private fun onLogoutSuccess() {
-        _logoutResult.value = Pair(true, null)
     }
 
     private fun isEmailValid(email: String): Boolean {

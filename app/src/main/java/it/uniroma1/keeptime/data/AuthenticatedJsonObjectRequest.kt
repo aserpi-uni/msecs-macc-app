@@ -1,9 +1,7 @@
 package it.uniroma1.keeptime.data
 
 import android.net.Uri
-import com.android.volley.AuthFailureError
-import com.android.volley.NetworkResponse
-import com.android.volley.Response
+import com.android.volley.*
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.JsonRequest
@@ -56,4 +54,8 @@ class AuthenticatedJsonObjectRequest(
         if(jsonString.isEmpty()) return Response.success(null, HttpHeaderParser.parseCacheHeaders(response))
         return super.parseNetworkResponse(response)
     }
+}
+
+fun VolleyError.isUnprocessableEntity(): Boolean {
+    return this is ClientError && this.networkResponse.statusCode == 422
 }

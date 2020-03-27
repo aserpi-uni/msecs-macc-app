@@ -1,9 +1,7 @@
 package it.uniroma1.keeptime.ui.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import android.util.Patterns
+import androidx.lifecycle.*
 import com.android.volley.*
 import it.uniroma1.keeptime.data.LoginRepository
 
@@ -12,61 +10,69 @@ import it.uniroma1.keeptime.data.model.Worker
 
 class LoginViewModel : ViewModel() {
 
+    val email = MutableLiveData<String>()
+    val emailError: LiveData<Int> = Transformations.map(email) {
+        if(it.isNullOrEmpty() || isEmailValid(it)) null else R.string.invalid_username
+    }
+
+    val password = MutableLiveData<String>()
+    val passwordError: LiveData<Int> = Transformations.map(password) {
+        if(it.isNullOrEmpty() || isPasswordValid(it)) null else R.string.invalid_password
+    }
+
+    val server = MutableLiveData<String>()
+    val serverError: LiveData<Int> = Transformations.map(server) {
+        if(it.isNullOrEmpty()) R.string.required else if(isServerValid(it)) null else R.string.invalid_server
+    }
+
+    private val _busy = MutableLiveData<Boolean>(false)
+    val busy: LiveData<Boolean> = _busy
+
+    val googleLoginable: LiveData<Boolean> = Transformations.map(server) { isServerValid(it) }
+
+    private val _loginable = MediatorLiveData<Boolean>()
+    private fun setLoginable() {
+        val emailValue = email.value
+        val passwordValue = password.value
+        val serverValue = server.value
+
+        _loginable.value =
+            emailValue != null && isEmailValid(emailValue)
+            && passwordValue != null && isPasswordValid(passwordValue)
+            && serverValue != null && isServerValid(serverValue)
+    }
+    init {
+        _loginable.addSource(email) { setLoginable() }
+        _loginable.addSource(password) { setLoginable() }
+        _loginable.addSource(server) { setLoginable() }
+    }
+    val loginable: LiveData<Boolean> = _loginable
+
     private val _googleIdResult = MutableLiveData<String>()
     val googleIdResult: LiveData<String> = _googleIdResult
-
-    private val _loginForm = MutableLiveData<LoginFormState>()
-    val loginFormState: LiveData<LoginFormState> = _loginForm
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    private var loginRepository = LoginRepository
-
     fun googleOauthId(server: String) {
-        loginRepository.googleOauthId(server, { _googleIdResult.value = it }, ::onLoginFailure)
+        LoginRepository.googleOauthId(server, { _googleIdResult.value = it }, ::onLoginFailure)
     }
 
     fun googleOauthSignIn(token: String) {
-        loginRepository.googleOauthSignIn(token, ::onLoginSuccess, ::onLoginFailure)
+        LoginRepository.googleOauthSignIn(token, ::onLoginSuccess, ::onLoginFailure)
     }
 
     fun login(username: String, password: String, server: String) {
-        loginRepository.login(username, password, server, ::onLoginSuccess, ::onLoginFailure)
+        LoginRepository.login(username, password, server, ::onLoginSuccess, ::onLoginFailure)
     }
 
-    fun loginDataChanged(username: String, password: String, server: String) {
-        var serverError: Int? = null
-        if(! isServerValid(server)) {
-            serverError =  R.string.invalid_server
-        }
-
-        if(!isUserNameValid(username)) {
-            _loginForm.value = LoginFormState(
-                isGoogleSignInPossible = serverError == null,
-                serverError = serverError,
-                usernameError = R.string.invalid_username
-            )
-        } else if(!isPasswordValid(password)) {
-            _loginForm.value = LoginFormState(
-                isGoogleSignInPossible = serverError == null,
-                passwordError = R.string.invalid_password,
-                serverError = serverError
-            )
-        } else if(serverError != null) {
-            _loginForm.value = LoginFormState(isGoogleSignInPossible = false, serverError = serverError)
-        } else {
-            _loginForm.value = LoginFormState(isDataValid = true, isGoogleSignInPossible = true)
-        }
-    }
-
-    private fun isUserNameValid(username: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(username).matches()
+    private fun isEmailValid(email: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
     // TODO
     private fun isPasswordValid(password: String): Boolean {
-        return password.length > 5
+        return password.length > 24
     }
 
     private fun isServerValid(server: String): Boolean {

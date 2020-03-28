@@ -8,15 +8,17 @@ import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
-import it.uniroma1.keeptime.KeepTime
-import it.uniroma1.keeptime.data.model.Worker
-import it.uniroma1.keeptime.data.model.WorkerReference
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
+import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.suspendCancellableCoroutine
 
+import it.uniroma1.keeptime.KeepTime
+import it.uniroma1.keeptime.data.model.WorkerReference
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -24,27 +26,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  */
 
 object LoginRepository {
-    val isLoggedIn: Boolean
-        get() = user != null
-
-        // TODO: secure
-        var authenticationToken: String? = null
-            private set
+    // TODO: secure
+    var authenticationToken: String? = null
+        private set
 
     var user: WorkerReference? = null
 
     private var server: String? = null
-
-    /**
-     * Checks stored credentials to see if they are still valid.
-     */
-    fun checkCredentials(url: String, email_: String, authenticationToken_: String,
-                         successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit) {
-        authenticationToken = authenticationToken_
-        user = WorkerReference(email_, url)
-        server = Regex("(https:\\/\\/[^\\/]*)\\S*").matchEntire(url)!!.groupValues[1]
-        user!!.fromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
-    }
 
     /**
      * Asks the server for its Google OAuth
@@ -52,17 +40,36 @@ object LoginRepository {
      *
      * @see googleOauthSignIn
      */
-    fun googleOauthId(server_: String, successCallback: (String) -> Unit, failCallback: (VolleyError) -> Unit) {
+    suspend fun googleOauthId(server_: String): String {
         val serverBuilder = Uri.parse(if(server_.startsWith("https")) server_ else "https://$server_").buildUpon()
         server = serverBuilder.build().toString()
         serverBuilder.appendPath("google_oauth").appendPath("id")
 
-        val loginRequest = StringRequest(
-            Request.Method.GET, serverBuilder.build().toString(),
-            Response.Listener { response: String -> successCallback(response) },
-            Response.ErrorListener { error -> failCallback(error) })
+        return suspendCancellableCoroutine { cont ->
+            val request = StringRequest(
+                Request.Method.GET, serverBuilder.build().toString(),
+                Response.Listener { cont.resume(it) { } },
+                Response.ErrorListener { cont.resumeWithException(it) }
+            )
 
-        KeepTime.instance!!.requestQueue.add(loginRequest)
+            KeepTime.instance!!.requestQueue.add(request)
+
+            cont.invokeOnCancellation {
+                request.cancel()
+            }
+        }
+    }
+
+    /**
+     * Logs a user in using email address and password.
+     */
+    suspend fun loginWithEmail(email_: String, password: String, server_: String) {
+        try {
+            server = if (server_.startsWith("https")) server_ else "https://$server_"
+            onLoginSuccess(authenticateWithEmail(email_, password))
+        } catch (error: VolleyError) {
+            onLoginFailure(error)
+        }
     }
 
     /**
@@ -70,42 +77,35 @@ object LoginRepository {
      * retrieved by [LoginActivity][it.uniroma1.keeptime.LoginActivity] to the server
      * in order to get an authentication token.
      */
-    fun googleOauthSignIn(
-        idToken: String,
-        successCallback: (Worker) -> Unit,
-        failCallback: (VolleyError) -> Unit
-    ) {
-        val loginRequest = JsonObjectRequest(
-            Request.Method.POST,
-            Uri.parse(server).buildUpon()
-                .appendPath("google_oauth")
-                .appendPath("sign_in.json")
-                .build().toString(),
-            JSONObject("{\"id_token\":\"$idToken\"}"),
-            Response.Listener { response -> onLoginSuccess(response, successCallback, failCallback) },
-            Response.ErrorListener { error -> onLoginFailure(error, failCallback) })
-
-        KeepTime.instance!!.requestQueue.add(loginRequest)
+    suspend fun loginWithGoogle(idToken: String) {
+        try {
+            onLoginSuccess(authenticateWithGoogle(idToken))
+        } catch (error: VolleyError) {
+            onLoginFailure(error)
+        }
     }
 
     /**
-     * Logs a user in using email address and password.
+     * Login with stored credentials, if any and still valid.
      */
-    fun login(
-        username: String, password: String, server_: String,
-        successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit
-    ) {
-        val serverBuilder = Uri.parse(if(server_.startsWith("https")) server_ else "https://$server_").buildUpon()
-        server = serverBuilder.build().toString()
-        serverBuilder.appendPath("workers").appendPath("sign_in.json")
+    suspend fun loginWithStoredCredentials(): Boolean {
+        lateinit var savedCredentials: Triple<String, String, String>
+        try {
+            savedCredentials = retrieveCredentials()
+        } catch (_: java.io.IOException) {
+            return false
+        }
 
-        val requestParameters = JSONObject("{\"worker\":{\"email\":\"$username\",\"password\":\"$password\"}}")
-        val loginRequest = JsonObjectRequest(
-            Request.Method.POST, serverBuilder.build().toString(), requestParameters,
-            Response.Listener { response -> onLoginSuccess(response, successCallback, failCallback) },
-            Response.ErrorListener { error -> onLoginFailure(error, failCallback) })
+        authenticationToken = savedCredentials.third
+        user = WorkerReference(savedCredentials.second, savedCredentials.first)
+        server = Regex("(https:\\/\\/[^\\/]*)\\S*").matchEntire(savedCredentials.first)!!.groupValues[1]
 
-        KeepTime.instance!!.requestQueue.add(loginRequest)
+        try {
+            user = user!!.fromServer()
+            return true
+        } catch(error: VolleyError) {
+            onLoginFailure(error)
+        }
     }
 
     /**
@@ -133,32 +133,96 @@ object LoginRepository {
     /**
      * Removes stored credentials.
      */
-    fun removeCredentials() {
+     fun removeCredentials() {
         authenticationToken = null
         user = null
         server = null
 
-        // Remove credentials from local storage
+        // Remove credentials from local storage, if any
         try {
             File(KeepTime.context.filesDir, "CredentialsFile").delete()
         } catch (e: java.io.IOException) { }
     }
 
-    private fun onLoginFailure(error: VolleyError, callback: (VolleyError) -> Unit) {
-        removeCredentials()
-        callback(error)
+    private suspend fun authenticateWithEmail(email: String, password: String): JSONObject {
+        val serverBuilder = Uri.parse(server).buildUpon()
+        serverBuilder.appendPath("workers").appendPath("sign_in.json")
+
+        val requestParameters = JSONObject("{\"worker\":{\"email\":\"$email\",\"password\":\"$password\"}}")
+        return suspendCancellableCoroutine { cont ->
+            val request = JsonObjectRequest(
+                Request.Method.POST, serverBuilder.build().toString(), requestParameters,
+                Response.Listener { cont.resume(it) { } },
+                Response.ErrorListener { cont.resumeWithException(it) })
+
+            KeepTime.instance!!.requestQueue.add(request)
+
+            cont.invokeOnCancellation {
+                request.cancel()
+            }
+        }
     }
 
-    private fun onLoginSuccess(response: JSONObject, successCallback: (Worker) -> Unit, failCallback: (VolleyError) -> Unit) {
+    private suspend fun authenticateWithGoogle(idToken: String): JSONObject = suspendCancellableCoroutine { cont ->
+        val request = JsonObjectRequest(
+            Request.Method.POST,
+            Uri.parse(server).buildUpon()
+                .appendPath("google_oauth")
+                .appendPath("sign_in.json")
+                .build().toString(),
+            JSONObject("{\"id_token\":\"$idToken\"}"),
+            Response.Listener { cont.resume(it) { } },
+            Response.ErrorListener { cont.resumeWithException(it) })
+
+        KeepTime.instance!!.requestQueue.add(request)
+
+        cont.invokeOnCancellation {
+            request.cancel()
+        }
+    }
+
+    private fun onLoginFailure(error: VolleyError): Nothing {
+        removeCredentials()
+        throw error
+    }
+
+    private suspend fun onLoginSuccess(response: JSONObject) {
         authenticationToken = response.getString("authentication_token")
         user = WorkerReference(response.getString("email"), response.getString("url"))
+        saveCredentials()
 
-        // Remove old credentials from local storage
-        try {
-            File(KeepTime.context.filesDir, "CredentialsFile").delete()
-        } catch (e: java.io.IOException) { }
+        user = user!!.fromServer()
+    }
 
-        // Save credentials in encrypted local storage
+    private suspend fun retrieveCredentials(): Triple<String, String, String> {
+        val file = File(KeepTime.context.filesDir, "CredentialsFile")
+        lateinit var encryptedFile: EncryptedFile
+        lateinit var masterKeyAlias: String
+        lateinit var authenticationToken: String
+        lateinit var email: String
+        lateinit var url: String
+
+        withContext(Dispatchers.IO) {
+            masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+            encryptedFile = EncryptedFile.Builder(
+                file,
+                KeepTime.context,
+                masterKeyAlias,
+                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            ).build()
+            encryptedFile.openFileInput().use { inStream ->
+                ObjectInputStream(inStream).use {
+                    url = it.readObject() as String
+                    email = it.readObject() as String
+                    authenticationToken = it.readObject() as String
+                }
+            }
+        }
+
+        return Triple(url, email, authenticationToken)
+    }
+
+    private fun saveCredentials() {
         val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
         val file = File(KeepTime.context.filesDir, "CredentialsFile")
         val encryptedFile = EncryptedFile.Builder(
@@ -167,6 +231,7 @@ object LoginRepository {
             masterKeyAlias,
             EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
         ).build()
+
         encryptedFile.openFileOutput().use { outStream ->
             ObjectOutputStream(outStream).use { outObjStream ->
                 outObjStream.writeObject(user!!.url.toString())
@@ -174,15 +239,5 @@ object LoginRepository {
                 outObjStream.writeObject(authenticationToken!!)
             }
         }
-
-        user!!.fromServer(onWorkerSuccess(successCallback), onWorkerFailure(failCallback))
-    }
-
-    private fun onWorkerFailure(failCallback: (VolleyError) -> Unit): (VolleyError) -> Any {
-        return { error: VolleyError -> removeCredentials(); failCallback(error) }
-    }
-
-    private fun onWorkerSuccess(successCallback: (Worker) -> Unit): (Worker) -> Any {
-        return { worker: Worker -> user = worker; successCallback(worker) }
     }
 }

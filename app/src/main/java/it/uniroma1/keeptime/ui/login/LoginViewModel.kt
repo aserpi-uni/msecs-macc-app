@@ -1,12 +1,13 @@
 package it.uniroma1.keeptime.ui.login
 
 import android.util.Patterns
+import android.view.View
 import androidx.lifecycle.*
 import com.android.volley.*
-import it.uniroma1.keeptime.data.LoginRepository
+import kotlinx.coroutines.launch
 
 import it.uniroma1.keeptime.R
-import it.uniroma1.keeptime.data.model.Worker
+import it.uniroma1.keeptime.data.LoginRepository
 
 class LoginViewModel : ViewModel() {
 
@@ -25,9 +26,6 @@ class LoginViewModel : ViewModel() {
         if(it.isNullOrEmpty()) R.string.required else if(isServerValid(it)) null else R.string.invalid_server
     }
 
-    private val _busy = MutableLiveData<Boolean>(false)
-    val busy: LiveData<Boolean> = _busy
-
     val googleLoginable: LiveData<Boolean> = Transformations.map(server) { isServerValid(it) }
 
     private val _loginable = MediatorLiveData<Boolean>()
@@ -38,8 +36,8 @@ class LoginViewModel : ViewModel() {
 
         _loginable.value =
             emailValue != null && isEmailValid(emailValue)
-            && passwordValue != null && isPasswordValid(passwordValue)
-            && serverValue != null && isServerValid(serverValue)
+                    && passwordValue != null && isPasswordValid(passwordValue)
+                    && serverValue != null && isServerValid(serverValue)
     }
     init {
         _loginable.addSource(email) { setLoginable() }
@@ -48,22 +46,67 @@ class LoginViewModel : ViewModel() {
     }
     val loginable: LiveData<Boolean> = _loginable
 
-    private val _googleIdResult = MutableLiveData<String>()
-    val googleIdResult: LiveData<String> = _googleIdResult
+    private val _busy = MutableLiveData<Boolean>()
+    val busy: LiveData<Boolean> = _busy
 
-    private val _loginResult = MutableLiveData<LoginResult>()
-    val loginResult: LiveData<LoginResult> = _loginResult
+    private val _googleOauthId = MutableLiveData<String>()
+    val googleOauthId: LiveData<String> = _googleOauthId
 
-    fun googleOauthId(server: String) {
-        LoginRepository.googleOauthId(server, { _googleIdResult.value = it }, ::onLoginFailure)
+    private val _loginSuccess = MutableLiveData<Boolean>()
+    val loginSuccess: LiveData<Boolean> = _loginSuccess
+
+    private val _message = MutableLiveData<Int>()
+    val message: LiveData<Int> = _message
+
+    fun getGoogleOauthId(view: View) {
+        _busy.value = true
+
+        viewModelScope.launch {
+            try {
+                _googleOauthId.value = LoginRepository.googleOauthId(server.value!!)
+            } catch(error: VolleyError) {
+                onLoginFailure(error)
+            }
+        }
     }
 
-    fun googleOauthSignIn(token: String) {
-        LoginRepository.googleOauthSignIn(token, ::onLoginSuccess, ::onLoginFailure)
+    fun loginWithEmail(view: View) {
+        _busy.value = true
+        viewModelScope.launch {
+            try {
+                LoginRepository.loginWithEmail(email.value!!, password.value!!, server.value!!)
+                _loginSuccess.value = true
+            } catch (error: VolleyError) {
+                onLoginFailure(error)
+            }
+        }
     }
 
-    fun login(username: String, password: String, server: String) {
-        LoginRepository.login(username, password, server, ::onLoginSuccess, ::onLoginFailure)
+    fun googleOauthSignIn(idToken: String) {
+        _busy.value = true
+        viewModelScope.launch {
+            try {
+                LoginRepository.loginWithGoogle(idToken)
+                _loginSuccess.value = true
+            } catch (error: VolleyError) {
+                onLoginFailure(error)
+            }
+        }
+    }
+
+    private fun checkCredentials() {
+        _busy.value = true
+
+        viewModelScope.launch {
+            try {
+                if(LoginRepository.loginWithStoredCredentials())
+                    _loginSuccess.value = true
+                else
+                    _busy.value = false
+            } catch (error: VolleyError) {
+                onLoginFailure(error)
+            }
+        }
     }
 
     private fun isEmailValid(email: String): Boolean {
@@ -79,19 +122,18 @@ class LoginViewModel : ViewModel() {
         return Patterns.WEB_URL.matcher(server).matches()
     }
 
-    fun onLoginFailure(error: VolleyError) {
-        val errorMessage = when(error) {
+    private fun onLoginFailure(error: VolleyError) {
+        _busy.value = false
+        _message.value = when(error) {
             is NoConnectionError, is TimeoutError -> R.string.failed_no_response
             is AuthFailureError -> R.string.failed_wrong_credentials
             is NetworkError -> R.string.failed_network
             is ParseError, is ServerError -> R.string.failed_server
             else -> R.string.failed_unknown
         }
-
-        _loginResult.value = LoginResult(error = errorMessage)
     }
 
-    fun onLoginSuccess(user: Worker) {
-        _loginResult.value = LoginResult(success = user)
+    init {
+        checkCredentials()
     }
 }

@@ -11,6 +11,9 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.widget.TextView
+import androidx.lifecycle.Observer
+import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.ui.preferences.SettingsFragmentDirections
 
 class NavigationDrawerActivity : AppCompatActivity() {
@@ -26,13 +29,20 @@ class NavigationDrawerActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(R.id.nav_clients, R.id.nav_log, R.id.nav_projects, R.id.nav_workspaces), drawerLayout
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        LoginRepository.user.observe(this, Observer {
+            val email = LoginRepository.user.value?.email ?: return@Observer
+            navView.getHeaderView(0).findViewById<TextView>(R.id.textView).text = email
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

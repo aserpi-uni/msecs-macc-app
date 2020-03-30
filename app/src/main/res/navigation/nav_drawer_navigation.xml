@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_drawer_navigation"
+    app:startDestination="@id/nav_log">
+
+    <fragment
+        android:id="@+id/nav_workspaces"
+        android:name="it.uniroma1.keeptime.ui.workspaces.WorkspacesFragment"
+        android:label="@string/menu_workspaces"
+        tools:layout="@layout/workspaces" />
+
+    <fragment
+        android:id="@+id/nav_log"
+        android:name="it.uniroma1.keeptime.ui.log.LogFragment"
+        android:label="@string/menu_log"
+        tools:layout="@layout/log" />
+
+    <fragment
+        android:id="@+id/nav_projects"
+        android:name="it.uniroma1.keeptime.ui.projects.ProjectsFragment"
+        android:label="@string/menu_projects"
+        tools:layout="@layout/projects" />
+
+    <fragment
+        android:id="@+id/nav_clients"
+        android:name="it.uniroma1.keeptime.ui.clients.ClientsFragment"
+        android:label="@string/menu_clients"
+        tools:layout="@layout/clients" />
+
+    <fragment
+        android:id="@+id/userPreferencesFragment"
+        android:name="it.uniroma1.keeptime.ui.preferences.UserPreferencesFragment"
+        android:label="@string/menu_user_preferences"
+        tools:layout="@layout/user_preferences_fragment" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="it.uniroma1.keeptime.ui.preferences.SettingsFragment"
+        android:label="@string/menu_preferences">
+        <action
+            android:id="@+id/action_to_userPreferencesFragment"
+            app:destination="@id/userPreferencesFragment" />
+    </fragment>
+    <action android:id="@+id/action_open_settings" app:destination="@id/settingsFragment" />
+</navigation>

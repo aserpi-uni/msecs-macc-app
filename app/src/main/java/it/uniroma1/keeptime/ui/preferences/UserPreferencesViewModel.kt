@@ -19,16 +19,16 @@ import kotlin.coroutines.resumeWithException
 
 class UserPreferencesViewModel : ViewModel() {
 
-    val billRate = MutableLiveData((LoginRepository.user as Worker).billRate.toString())
+    val billRate = MutableLiveData((LoginRepository.user.value as Worker).billRate.toString())
     val billRateError: LiveData<Int> = Transformations.map(billRate) {
         if(isBillRateValid(it)) null else R.string.invalid_bill_rate
     }
 
-    private val _currency = MutableLiveData((LoginRepository.user as Worker).currency)
+    private val _currency = MutableLiveData((LoginRepository.user.value as Worker).currency)
     val currency: LiveData<String> = Transformations.map(_currency) { it.displayName }
     fun setCurrency(currency: Currency) { _currency.value = currency }
 
-    val email = MutableLiveData((LoginRepository.user as Worker).email)
+    val email = MutableLiveData((LoginRepository.user.value as Worker).email)
     val emailError: LiveData<Int> = Transformations.map(email) {
         if(isEmailValid(it)) null else R.string.invalid_username
     }
@@ -150,7 +150,7 @@ class UserPreferencesViewModel : ViewModel() {
 
     private fun userParams(): JSONObject {
         val userParams = JSONObject()
-        val user = (LoginRepository.user as Worker)
+        val user = (LoginRepository.user.value as Worker)
 
         if(! email.value.isNullOrEmpty() && email.value != user.email)
             userParams.accumulate("email", email.value)

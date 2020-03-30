@@ -84,7 +84,7 @@ class UserPreferencesFragment : Fragment() {
         })
 
         val allCurrencies = Currency.getAvailableCurrencies().toList().sortedBy { it.displayName }
-        var selectedIdx = allCurrencies.indexOfFirst { it == (LoginRepository.user as Worker).currency }
+        var selectedIdx = allCurrencies.indexOfFirst { it == (LoginRepository.user.value as Worker).currency }
         view.prompt_currency.setOnClickListener {
             MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.select_currency)

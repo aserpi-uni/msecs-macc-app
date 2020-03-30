@@ -40,7 +40,7 @@ class AuthenticatedJsonObjectRequest(
     @Throws(AuthFailureError::class)
     override fun getHeaders(): MutableMap<String, String>? {
         val headers = HashMap<String, String>()
-        headers["X-WORKER-EMAIL"] = LoginRepository.user!!.email
+        headers["X-WORKER-EMAIL"] = LoginRepository.user.value!!.email
         headers["X-WORKER-TOKEN"] = LoginRepository.authenticationToken!!
         return headers
     }

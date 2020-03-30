@@ -1,6 +1,8 @@
 package it.uniroma1.keeptime.data
 
 import android.net.Uri
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
 import com.android.volley.Request
@@ -32,8 +34,8 @@ object LoginRepository {
     var authenticationToken: String? = null
         private set
 
-    var user: WorkerReference? = null
-        private set
+    private val _user = MutableLiveData<WorkerReference>()
+    val user: LiveData<WorkerReference> = _user
 
     private var server: String? = null
 
@@ -41,7 +43,7 @@ object LoginRepository {
      * Asks the server for its Google OAuth
      * [client ID](https://developers.google.com/identity/sign-in/android/backend-auth#send-the-id-token-to-your-server).
      *
-     * @see googleOauthSignIn
+     * @see loginWithGoogle
      */
     suspend fun googleOauthId(server_: String): String {
         val serverBuilder = Uri.parse(if(server_.startsWith("https")) server_ else "https://$server_").buildUpon()
@@ -100,11 +102,11 @@ object LoginRepository {
         }
 
         authenticationToken = savedCredentials.third
-        user = WorkerReference(savedCredentials.second, savedCredentials.first)
+        _user.value = WorkerReference(savedCredentials.second, savedCredentials.first)
         server = Regex("(https:\\/\\/[^\\/]*)\\S*").matchEntire(savedCredentials.first)!!.groupValues[1]
 
         try {
-            user = user!!.fromServer()
+            _user.value = user.value!!.fromServer()
             return true
         } catch(error: VolleyError) {
             onLoginFailure(error)
@@ -143,7 +145,7 @@ object LoginRepository {
         val response = suspendCancellableCoroutine<JSONObject> { cont ->
             val request = AuthenticatedJsonObjectRequest(
                 Request.Method.PATCH,
-                user!!.url,
+                user.value!!.url,
                 userParams,
                 Response.Listener { cont.resume(it) { } },
                 Response.ErrorListener { cont.resumeWithException(it) }
@@ -156,7 +158,7 @@ object LoginRepository {
             }
         }
 
-        user = Json.parse(Worker.serializer(), response.toString())
+        _user.value = Json.parse(Worker.serializer(), response.toString())
 
         if(userParams.has("email")) {
             File(KeepTime.context.filesDir, "CredentialsFile").delete()
@@ -169,7 +171,7 @@ object LoginRepository {
      */
      fun removeCredentials() {
         authenticationToken = null
-        user = null
+        _user.value = null
         server = null
 
         // Remove credentials from local storage, if any
@@ -222,10 +224,10 @@ object LoginRepository {
 
     private suspend fun onLoginSuccess(response: JSONObject) {
         authenticationToken = response.getString("authentication_token")
-        user = WorkerReference(response.getString("email"), response.getString("url"))
+        _user.value = WorkerReference(response.getString("email"), response.getString("url"))
         saveCredentials()
 
-        user = user!!.fromServer()
+        _user.value = user.value!!.fromServer()
     }
 
     private suspend fun retrieveCredentials(): Triple<String, String, String> {
@@ -268,8 +270,8 @@ object LoginRepository {
 
         encryptedFile.openFileOutput().use { outStream ->
             ObjectOutputStream(outStream).use { outObjStream ->
-                outObjStream.writeObject(user!!.url.toString())
-                outObjStream.writeObject(user!!.email)
+                outObjStream.writeObject(user.value!!.url.toString())
+                outObjStream.writeObject(user.value!!.email)
                 outObjStream.writeObject(authenticationToken!!)
             }
         }

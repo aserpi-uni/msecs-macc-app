@@ -108,12 +108,10 @@ class UserPreferencesViewModel : ViewModel() {
             return
         }
          _busy.value = true
-        val requestParams = JSONObject()
-        requestParams.accumulate("worker", userParams)
 
         viewModelScope.launch {
             try {
-                LoginRepository.user = Json.parse(Worker.serializer(), sendUserUpdate(requestParams).toString())
+                LoginRepository.updateUser(userParams)
 
                 _busy.value = false
                 _message.value = R.string.success_update
@@ -148,22 +146,6 @@ class UserPreferencesViewModel : ViewModel() {
 
         val billRateNumber = billRate.toDoubleOrNull() ?: return false
         return billRateNumber.round(2) == billRateNumber
-    }
-
-    private suspend fun sendUserUpdate(params: JSONObject) = suspendCancellableCoroutine<JSONObject> { cont ->
-        val request = AuthenticatedJsonObjectRequest(
-            Request.Method.PATCH,
-            LoginRepository.user!!.url,
-            params,
-            Response.Listener { cont.resume(it) { } },
-            Response.ErrorListener { cont.resumeWithException(it) }
-        )
-
-        KeepTime.instance!!.requestQueue.add(request)
-
-        cont.invokeOnCancellation {
-            request.cancel()
-        }
     }
 
     private fun userParams(): JSONObject {

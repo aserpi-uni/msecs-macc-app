@@ -18,7 +18,9 @@ import java.io.ObjectOutputStream
 import kotlin.coroutines.resumeWithException
 
 import it.uniroma1.keeptime.KeepTime
+import it.uniroma1.keeptime.data.model.Worker
 import it.uniroma1.keeptime.data.model.WorkerReference
+import kotlinx.serialization.json.Json
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -31,6 +33,7 @@ object LoginRepository {
         private set
 
     var user: WorkerReference? = null
+        private set
 
     private var server: String? = null
 
@@ -127,6 +130,37 @@ object LoginRepository {
             continuation.invokeOnCancellation {
                 logoutRequest.cancel()
             }
+        }
+    }
+
+    /**
+     * Updates user information.
+     */
+    suspend fun updateUser(userParams: JSONObject) {
+        val requestParams = JSONObject()
+        requestParams.accumulate("worker", userParams)
+
+        val response = suspendCancellableCoroutine<JSONObject> { cont ->
+            val request = AuthenticatedJsonObjectRequest(
+                Request.Method.PATCH,
+                user!!.url,
+                userParams,
+                Response.Listener { cont.resume(it) { } },
+                Response.ErrorListener { cont.resumeWithException(it) }
+            )
+
+            KeepTime.instance!!.requestQueue.add(request)
+
+            cont.invokeOnCancellation {
+                request.cancel()
+            }
+        }
+
+        user = Json.parse(Worker.serializer(), response.toString())
+
+        if(userParams.has("email")) {
+            File(KeepTime.context.filesDir, "CredentialsFile").delete()
+            saveCredentials()
         }
     }
 

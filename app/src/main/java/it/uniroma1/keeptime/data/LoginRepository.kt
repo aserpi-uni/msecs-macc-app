@@ -57,7 +57,7 @@ object LoginRepository {
                 Response.ErrorListener { cont.resumeWithException(it) }
             )
 
-            KeepTime.instance!!.requestQueue.add(request)
+            KeepTime.instance.requestQueue.add(request)
 
             cont.invokeOnCancellation {
                 request.cancel()
@@ -127,7 +127,7 @@ object LoginRepository {
                 Response.ErrorListener { error -> continuation.resumeWithException(error) }
             )
 
-            KeepTime.instance!!.requestQueue.add(logoutRequest)
+            KeepTime.instance.requestQueue.add(logoutRequest)
 
             continuation.invokeOnCancellation {
                 logoutRequest.cancel()
@@ -151,7 +151,7 @@ object LoginRepository {
                 Response.ErrorListener { cont.resumeWithException(it) }
             )
 
-            KeepTime.instance!!.requestQueue.add(request)
+            KeepTime.instance.requestQueue.add(request)
 
             cont.invokeOnCancellation {
                 request.cancel()
@@ -191,7 +191,7 @@ object LoginRepository {
                 Response.Listener { cont.resume(it) { } },
                 Response.ErrorListener { cont.resumeWithException(it) })
 
-            KeepTime.instance!!.requestQueue.add(request)
+            KeepTime.instance.requestQueue.add(request)
 
             cont.invokeOnCancellation {
                 request.cancel()
@@ -210,7 +210,7 @@ object LoginRepository {
             Response.Listener { cont.resume(it) { } },
             Response.ErrorListener { cont.resumeWithException(it) })
 
-        KeepTime.instance!!.requestQueue.add(request)
+        KeepTime.instance.requestQueue.add(request)
 
         cont.invokeOnCancellation {
             request.cancel()

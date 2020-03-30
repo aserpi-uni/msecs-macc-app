@@ -93,7 +93,7 @@ open class Worker(
                 Response.Listener { cont.resume(Json.parse(serializer(), it.toString())) { } },
                 Response.ErrorListener { cont.resumeWithException(it) })
 
-            KeepTime.instance!!.requestQueue.add(request)
+            KeepTime.instance.requestQueue.add(request)
 
             cont.invokeOnCancellation {
                 request.cancel()

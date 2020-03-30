@@ -16,11 +16,11 @@ class KeepTime : Application() {
      * @property instance The unique instance of KeepTime
      */
     companion object {
-        var instance: KeepTime? = null
+        lateinit var instance: KeepTime
             private set
 
         val context: Context
-            get() = instance!!
+            get() = instance
     }
 
     override fun onCreate() {

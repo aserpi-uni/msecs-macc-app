@@ -1,4 +1,4 @@
-package it.uniroma1.keeptime.ui.slideshow
+package it.uniroma1.keeptime.ui.workspaces
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import it.uniroma1.keeptime.R
 
-class SlideshowFragment : Fragment() {
+class WorkspacesFragment : Fragment() {
 
-    private lateinit var slideshowViewModel: SlideshowViewModel
+    private lateinit var workspacesViewModel: WorkspacesViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        slideshowViewModel =
-            ViewModelProviders.of(this).get(SlideshowViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_slideshow, container, false)
-        val textView: TextView = root.findViewById(R.id.text_slideshow)
-        slideshowViewModel.text.observe(this, Observer {
+        workspacesViewModel =
+            ViewModelProviders.of(this).get(WorkspacesViewModel::class.java)
+        val root = inflater.inflate(R.layout.workspaces, container, false)
+        val textView: TextView = root.findViewById(R.id.text_home)
+        workspacesViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root

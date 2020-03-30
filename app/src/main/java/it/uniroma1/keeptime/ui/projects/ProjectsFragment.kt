@@ -1,4 +1,4 @@
-package it.uniroma1.keeptime.ui.gallery
+package it.uniroma1.keeptime.ui.projects
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import it.uniroma1.keeptime.R
 
-class GalleryFragment : Fragment() {
+class ProjectsFragment : Fragment() {
 
-    private lateinit var galleryViewModel: GalleryViewModel
+    private lateinit var projectsViewModel: ProjectsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        galleryViewModel =
-            ViewModelProviders.of(this).get(GalleryViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_gallery, container, false)
-        val textView: TextView = root.findViewById(R.id.text_gallery)
-        galleryViewModel.text.observe(this, Observer {
+        projectsViewModel =
+            ViewModelProviders.of(this).get(ProjectsViewModel::class.java)
+        val root = inflater.inflate(R.layout.projects, container, false)
+        val textView: TextView = root.findViewById(R.id.text_slideshow)
+        projectsViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root

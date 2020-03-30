@@ -10,8 +10,10 @@ import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.model.WorkspaceReference
 
 // TODO: use Material's one-line list when it will become public
-class WorkspacesAdapter(private val workspaces: List<WorkspaceReference>) :
+class WorkspacesAdapter(workspaces_: List<WorkspaceReference>) :
     RecyclerView.Adapter<WorkspacesAdapter.WorkspaceViewHolder>() {
+
+    private val workspaces = workspaces_.toMutableList()
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -37,4 +39,10 @@ class WorkspacesAdapter(private val workspaces: List<WorkspaceReference>) :
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = workspaces.size
+
+    fun replace(workspaces_: List<WorkspaceReference>) {
+        workspaces.clear()
+        workspaces.addAll(workspaces_)
+        notifyDataSetChanged()
+    }
 }

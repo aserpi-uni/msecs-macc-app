@@ -106,7 +106,7 @@ object LoginRepository {
         server = Regex("(https:\\/\\/[^\\/]*)\\S*").matchEntire(savedCredentials.first)!!.groupValues[1]
 
         try {
-            _user.value = user.value!!.fromServer()
+            refreshUser()
             return true
         } catch(error: VolleyError) {
             onLoginFailure(error)
@@ -133,6 +133,13 @@ object LoginRepository {
                 logoutRequest.cancel()
             }
         }
+    }
+
+    /**
+     * Retrieves the logged user from the server.
+     */
+    suspend fun refreshUser() {
+        _user.value = user.value!!.fromServer()
     }
 
     /**
@@ -227,7 +234,7 @@ object LoginRepository {
         _user.value = WorkerReference(response.getString("email"), response.getString("url"))
         saveCredentials()
 
-        _user.value = user.value!!.fromServer()
+        refreshUser()
     }
 
     private suspend fun retrieveCredentials(): Triple<String, String, String> {

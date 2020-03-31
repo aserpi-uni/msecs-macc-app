@@ -4,6 +4,7 @@
     android:id="@+id/workspacesListItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:foreground="?android:selectableItemBackground"
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView

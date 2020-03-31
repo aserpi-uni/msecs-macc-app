@@ -5,19 +5,16 @@ import android.util.Patterns
 import android.view.View
 import androidx.lifecycle.*
 import com.android.volley.*
-import it.uniroma1.keeptime.KeepTime
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+
 import it.uniroma1.keeptime.R
-import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.data.isUnprocessableEntity
 import it.uniroma1.keeptime.data.model.Worker
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.serialization.json.Json
-import org.json.JSONObject
-import kotlin.coroutines.resumeWithException
+import it.uniroma1.keeptime.ui.base.BaseViewModel
 
-class UserPreferencesViewModel : ViewModel() {
+class UserPreferencesViewModel : BaseViewModel() {
 
     val billRate = MutableLiveData((LoginRepository.user.value as Worker).billRate.toString())
     val billRateError: LiveData<Int> = Transformations.map(billRate) {
@@ -74,9 +71,6 @@ class UserPreferencesViewModel : ViewModel() {
 
     private val _busy = MutableLiveData(false)
     val busy: LiveData<Boolean> = _busy
-
-    private val _logoutMessage = MutableLiveData<Int>()
-    val logoutMessage: LiveData<Int> = _logoutMessage
 
     fun logout() {
         _busy.value = true

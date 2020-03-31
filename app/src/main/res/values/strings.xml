@@ -28,10 +28,12 @@
 
 
     <string name="menu_clients">Clients</string>
-    <string name="menu_log">Personal log</string>
+    <string name="menu_log">Log</string>
+    <string name="menu_personal_log">Personal log</string>
     <string name="menu_preferences">Settings</string>
     <string name="menu_projects">Projects</string>
     <string name="menu_user_preferences">Profile settings</string>
+    <string name="menu_workers">Workers</string>
     <string name="menu_workspaces">Workspaces</string>
 
 
@@ -48,7 +50,4 @@
     <string name="success_update">Resource successfully updated</string>
     <string name="user_preference_summary">Tap to open user settings</string>
     <string name="title_activity_workspace">Workspace</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
 </resources>

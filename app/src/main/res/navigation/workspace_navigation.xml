@@ -3,23 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/workspace_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@id/nav_log">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="it.uniroma1.keeptime.ui.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-
+        android:id="@+id/nav_log"
+        android:name="it.uniroma1.keeptime.ui.log.LogFragment" />
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="it.uniroma1.keeptime.ui.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
+        android:id="@+id/nav_clients"
+        android:name="it.uniroma1.keeptime.ui.clients.ClientsFragment"
+        android:label="ClientsFragment" />
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="it.uniroma1.keeptime.ui.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/nav_workers"
+        android:name="it.uniroma1.keeptime.ui.workers.WorkersFragment"
+        android:label="WorkersFragment" />
 </navigation>

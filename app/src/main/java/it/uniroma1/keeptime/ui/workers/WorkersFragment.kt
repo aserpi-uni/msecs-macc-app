@@ -18,7 +18,7 @@ class WorkersFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         workersViewModel = ViewModelProvider(this).get(WorkersViewModel::class.java)
-        val root = inflater.inflate(R.layout.clients, container, false)
+        val root = inflater.inflate(R.layout.workers, container, false)
 
         val textView: TextView = root.findViewById(R.id.text_workers)
         workersViewModel.text.observe(viewLifecycleOwner, Observer {

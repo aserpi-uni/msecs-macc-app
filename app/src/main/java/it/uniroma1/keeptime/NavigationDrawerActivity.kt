@@ -27,8 +27,8 @@ class NavigationDrawerActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        val navView: NavigationView = findViewById(R.id.drawer_nav)
+        val navController = findNavController(R.id.nav_drawer_host_fragment)
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -50,7 +50,7 @@ class NavigationDrawerActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.navigation_drawer, menu)
         menu.findItem(R.id.action_settings)?.setOnMenuItemClickListener {
             val action = SettingsFragmentDirections.actionOpenSettings()
-            this.findNavController(R.id.nav_host_fragment).navigate(action)
+            this.findNavController(R.id.nav_drawer_host_fragment).navigate(action)
             true
         }
 
@@ -58,7 +58,7 @@ class NavigationDrawerActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
+        val navController = findNavController(R.id.nav_drawer_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

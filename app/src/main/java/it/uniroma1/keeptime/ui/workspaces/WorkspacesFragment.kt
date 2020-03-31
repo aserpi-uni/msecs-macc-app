@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -14,7 +15,9 @@ import kotlinx.android.synthetic.main.workspaces.*
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.data.model.Worker
+import it.uniroma1.keeptime.data.model.WorkspaceReference
 import it.uniroma1.keeptime.ui.base.BaseFragment
+import kotlinx.serialization.json.Json
 
 
 class WorkspacesFragment : BaseFragment() {
@@ -24,7 +27,7 @@ class WorkspacesFragment : BaseFragment() {
     private lateinit var workspacesLayoutManager: LinearLayoutManager
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        workspacesAdapter = WorkspacesAdapter((LoginRepository.user.value as Worker).workspaces)
+        workspacesAdapter = WorkspacesAdapter((LoginRepository.user.value as Worker).workspaces, ::onWorkspaceClicked)
         workspacesLayoutManager = LinearLayoutManager(context)
         workspacesViewModel = ViewModelProvider(this).get(WorkspacesViewModel::class.java)
         viewModel = workspacesViewModel
@@ -58,5 +61,12 @@ class WorkspacesFragment : BaseFragment() {
             workspacesSwipe.isRefreshing = false
             Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
         })
+    }
+
+    private fun onWorkspaceClicked(workspace: WorkspaceReference) {
+        val action = WorkspacesFragmentDirections.actionToWorkspace(
+            workspace.name, Json.stringify(WorkspaceReference.serializer(), workspace)
+        )
+        findNavController().navigate(action)
     }
 }

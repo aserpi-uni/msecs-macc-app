@@ -9,7 +9,11 @@
         android:id="@+id/nav_workspaces"
         android:name="it.uniroma1.keeptime.ui.workspaces.WorkspacesFragment"
         android:label="@string/menu_workspaces"
-        tools:layout="@layout/workspaces" />
+        tools:layout="@layout/workspaces" >
+        <action
+            android:id="@+id/actionToWorkspace"
+            app:destination="@id/workspaceFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_log"
@@ -43,4 +47,16 @@
             app:destination="@id/userPreferencesFragment" />
     </fragment>
     <action android:id="@+id/action_open_settings" app:destination="@id/settingsFragment" />
+    <fragment
+        android:id="@+id/workspaceFragment"
+        android:name="it.uniroma1.keeptime.ui.workspace.WorkspaceFragment"
+        android:label="{title}">
+        <argument
+            android:name="title"
+            android:defaultValue="Workspace"
+            app:argType="string" />
+        <argument
+            android:name="workspaceJson"
+            app:argType="string" />
+    </fragment>
 </navigation>

@@ -47,4 +47,8 @@
     <string name="success_logout">Successfully logged out</string>
     <string name="success_update">Resource successfully updated</string>
     <string name="user_preference_summary">Tap to open user settings</string>
+    <string name="title_activity_workspace">Workspace</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

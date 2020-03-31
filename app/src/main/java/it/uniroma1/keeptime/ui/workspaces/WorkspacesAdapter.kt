@@ -10,7 +10,7 @@ import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.model.WorkspaceReference
 
 // TODO: use Material's one-line list when it will become public
-class WorkspacesAdapter(workspaces_: List<WorkspaceReference>) :
+class WorkspacesAdapter(workspaces_: List<WorkspaceReference>, private val onClick: (WorkspaceReference) -> Any) :
     RecyclerView.Adapter<WorkspacesAdapter.WorkspaceViewHolder>() {
 
     private val workspaces = workspaces_.toMutableList()
@@ -33,8 +33,12 @@ class WorkspacesAdapter(workspaces_: List<WorkspaceReference>) :
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: WorkspaceViewHolder, position: Int) {
-        (holder.constraintLayout.getViewById(R.id.workspacesListItemText) as MaterialTextView).text =
-            workspaces[position].name
+        val workspace = workspaces[position]
+        (holder.constraintLayout.getViewById(R.id.workspacesListItemText) as MaterialTextView).text = workspace.name
+
+        holder.constraintLayout.setOnClickListener {
+            onClick(workspace)
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

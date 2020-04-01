@@ -4,19 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.workspaces.*
+import kotlinx.serialization.json.Json
 
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.data.model.Worker
 import it.uniroma1.keeptime.data.model.WorkspaceReference
+import it.uniroma1.keeptime.databinding.WorkspacesBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
-import kotlinx.serialization.json.Json
 
 
 class WorkspacesFragment : BaseFragment() {
@@ -31,7 +33,16 @@ class WorkspacesFragment : BaseFragment() {
         workspacesViewModel = ViewModelProvider(this).get(WorkspacesViewModel::class.java)
         viewModel = workspacesViewModel
 
-        return inflater.inflate(R.layout.workspaces, container, false)
+        val binding = DataBindingUtil.inflate<WorkspacesBinding>(
+            inflater,
+            R.layout.workspaces,
+            container,
+            false
+        )
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = workspacesViewModel
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

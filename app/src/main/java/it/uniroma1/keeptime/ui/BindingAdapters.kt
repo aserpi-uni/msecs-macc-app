@@ -2,7 +2,13 @@ package it.uniroma1.keeptime.ui
 
 import android.view.View
 import androidx.databinding.BindingAdapter
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.textfield.TextInputLayout
+
+@BindingAdapter("isRefreshing")
+fun SwipeRefreshLayout.busy(busy: Boolean) {
+    this.isRefreshing = busy
+}
 
 @BindingAdapter("errorText")
 fun TextInputLayout.bindErrorMessage(errorMessage: Int?) {

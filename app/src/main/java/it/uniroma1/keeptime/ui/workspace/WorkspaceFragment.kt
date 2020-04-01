@@ -20,16 +20,25 @@ import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
 
 class WorkspaceFragment : BaseFragment() {
     private val args: WorkspaceFragmentArgs by navArgs()
+    lateinit var workspaceReference: WorkspaceReference
     lateinit var workspaceViewModel: WorkspaceViewModel
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        val infoItem = menu.findItem(R.id.action_info)
 
+        val infoItem = menu.findItem(R.id.action_info)
         infoItem.isVisible = true
         infoItem.setOnMenuItemClickListener {
             if(workspaceViewModel.workspace.value == null) return@setOnMenuItemClickListener true
             ModalBottomSheet(workspaceViewModel.workspace.value!!.description).show(parentFragmentManager, "info")
+            true
+        }
+
+        val refreshItem = menu.findItem(R.id.action_refresh)
+        refreshItem.isVisible = true
+        refreshItem.setOnMenuItemClickListener {
+            if(! ::workspaceReference.isInitialized) return@setOnMenuItemClickListener true
+            workspaceViewModel.getWorkspace(workspaceReference)
             true
         }
     }
@@ -66,6 +75,7 @@ class WorkspaceFragment : BaseFragment() {
         val navController = Navigation.findNavController(view.findViewById(R.id.workspace_host_fragment))
         navView.setupWithNavController(navController)
 
-        workspaceViewModel.getWorkspace(Json.parse(WorkspaceReference.serializer(), args.workspaceJson))
+        workspaceReference = Json.parse(WorkspaceReference.serializer(), args.workspaceJson)
+        workspaceViewModel.getWorkspace(workspaceReference)
     }
 }

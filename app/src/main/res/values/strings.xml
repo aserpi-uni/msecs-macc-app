@@ -9,6 +9,7 @@
     <string name="failed_unchanged">The resource is unchanged</string>
     <string name="failed_unknown">Unknown error</string>
     <string name="info">Additional information</string>
+    <string name="refresh">Refresh</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
 

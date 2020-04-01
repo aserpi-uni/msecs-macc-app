@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import it.uniroma1.keeptime.LoginActivity
 import it.uniroma1.keeptime.data.LoginRepository
 
@@ -27,6 +28,11 @@ open class BaseFragment : Fragment() {
 
             activity?.setResult(Activity.RESULT_OK)
             activity?.finish()
+        })
+
+        viewModel.message.observe(viewLifecycleOwner, Observer {
+            val message = it ?: return@Observer
+            Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
         })
     }
 }

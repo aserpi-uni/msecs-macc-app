@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
@@ -55,17 +54,6 @@ class UserPreferencesFragment : BaseFragment() {
 
             val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputManager?.hideSoftInputFromWindow(view.windowToken, 0)
-        })
-
-        userPreferencesViewModel.message.observe(viewLifecycleOwner, Observer {
-            val message = it ?: return@Observer
-
-            var snackbar: Snackbar? = null
-            if(message is Int)
-                snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
-            else if(message is String)
-                snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
-            snackbar?.show()
         })
 
         val allCurrencies = Currency.getAvailableCurrencies().toList().sortedBy { it.displayName }

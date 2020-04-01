@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.workspaces.*
 
 import it.uniroma1.keeptime.R
@@ -57,9 +56,7 @@ class WorkspacesFragment : BaseFragment() {
 
         workspacesViewModel.message.observe(viewLifecycleOwner, Observer {
             val message = it ?: return@Observer
-
             workspacesSwipe.isRefreshing = false
-            Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
         })
     }
 

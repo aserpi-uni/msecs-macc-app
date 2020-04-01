@@ -50,9 +50,6 @@ class UserPreferencesViewModel : BaseViewModel() {
     }
     val passwordConfirmationError: LiveData<Int> = _passwordConfirmationError
 
-    private val _message = MutableLiveData<Any>()
-    val message: MutableLiveData<Any> = _message
-
     private val _savable = MediatorLiveData<Boolean>()
     private fun setSavable() {
         _savable.value =

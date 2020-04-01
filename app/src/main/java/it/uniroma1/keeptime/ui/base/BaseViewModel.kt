@@ -7,4 +7,7 @@ import androidx.lifecycle.ViewModel
 open class BaseViewModel : ViewModel() {
     protected val _logoutMessage = MutableLiveData<Int>()
     val logoutMessage: LiveData<Int> = _logoutMessage
+
+    protected val _message = MutableLiveData<Int>()
+    val message: LiveData<Int> = _message
 }

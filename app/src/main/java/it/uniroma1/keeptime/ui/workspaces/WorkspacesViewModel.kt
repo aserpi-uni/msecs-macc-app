@@ -1,7 +1,5 @@
 package it.uniroma1.keeptime.ui.workspaces
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.android.volley.*
 import kotlinx.coroutines.launch
@@ -11,9 +9,6 @@ import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.ui.base.BaseViewModel
 
 class WorkspacesViewModel : BaseViewModel() {
-    private val _message = MutableLiveData<Int>()
-    val message: LiveData<Int> = _message
-
     fun refreshWorkspaces() = viewModelScope.launch {
         try {
             LoginRepository.refreshUser()

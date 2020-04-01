@@ -20,7 +20,7 @@ import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
 
 class WorkspaceFragment : BaseFragment() {
     private val args: WorkspaceFragmentArgs by navArgs()
-    private lateinit var workspaceViewModel: WorkspaceViewModel
+    lateinit var workspaceViewModel: WorkspaceViewModel
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)

@@ -18,6 +18,22 @@ import it.uniroma1.keeptime.databinding.WorkspaceBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
 import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
 
+class WorkspaceFragment : BaseFragment() {
+    private val args: WorkspaceFragmentArgs by navArgs()
+    private lateinit var workspaceViewModel: WorkspaceViewModel
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        val infoItem = menu.findItem(R.id.action_info)
+
+        infoItem.isVisible = true
+        infoItem.setOnMenuItemClickListener {
+            if(workspaceViewModel.workspace.value == null) return@setOnMenuItemClickListener true
+            ModalBottomSheet(workspaceViewModel.workspace.value!!.description).show(parentFragmentManager, "info")
+            true
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
         workspaceViewModel = ViewModelProvider(this).get(WorkspaceViewModel::class.java)

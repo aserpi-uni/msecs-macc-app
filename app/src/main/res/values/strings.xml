@@ -1,12 +1,14 @@
 <resources>
     <string name="app_name">KeepTime</string>
     <string name="cancel">Cancel</string>
+    <string name="description">Description</string>
     <string name="failed_invalid_attribute">One or more fields are invalid</string>
     <string name="failed_network">Network error</string>
     <string name="failed_no_response">Cannot connect to website</string>
     <string name="failed_server">Server error</string>
     <string name="failed_unchanged">The resource is unchanged</string>
     <string name="failed_unknown">Unknown error</string>
+    <string name="info">Additional information</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
 

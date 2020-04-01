@@ -11,9 +11,6 @@ import it.uniroma1.keeptime.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 
 class WorkspaceViewModel : BaseViewModel() {
-    private val _busy = MutableLiveData<Boolean>()
-    val busy: LiveData<Boolean> = _busy
-
     private val _workspace = MutableLiveData<Workspace>()
     val workspace: LiveData<Workspace> = _workspace
 

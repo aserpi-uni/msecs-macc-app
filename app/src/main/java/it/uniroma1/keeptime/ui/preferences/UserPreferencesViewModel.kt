@@ -65,9 +65,6 @@ class UserPreferencesViewModel : BaseViewModel() {
     }
     val savable: LiveData<Boolean> = _savable
 
-    private val _busy = MutableLiveData(false)
-    val busy: LiveData<Boolean> = _busy
-
     fun logout() {
         _busy.value = true
         viewModelScope.launch {
@@ -102,14 +99,13 @@ class UserPreferencesViewModel : BaseViewModel() {
         viewModelScope.launch {
             try {
                 LoginRepository.updateUser(userParams)
-
-                _busy.value = false
                 _message.value = R.string.success_update
             } catch (_: AuthFailureError) {
                 _logoutMessage.value = R.string.failed_wrong_credentials
             } catch (error: VolleyError) {
-                _busy.value = false
                 _message.value = volleyErrorMessage(error)
+            } finally {
+                _busy.value = false
             }
         }
     }

@@ -48,14 +48,6 @@ class UserPreferencesFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userPreferencesViewModel.busy.observe(viewLifecycleOwner, Observer {
-            val busy = it ?: return@Observer
-            if(! busy) return@Observer
-
-            val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputManager?.hideSoftInputFromWindow(view.windowToken, 0)
-        })
-
         val allCurrencies = Currency.getAvailableCurrencies().toList().sortedBy { it.displayName }
         var selectedIdx = allCurrencies.indexOfFirst { it == (LoginRepository.user.value as Worker).currency }
         view.prompt_currency.setOnClickListener {

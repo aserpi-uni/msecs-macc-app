@@ -9,9 +9,16 @@ import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
+
 import it.uniroma1.keeptime.LoginActivity
 import it.uniroma1.keeptime.data.LoginRepository
 
+
+/**
+ * Base class for fragments, to be used with the [base class for viewmodels][BaseViewModel].
+ *
+ * @property viewModel Instance of [BaseViewModel]
+ */
 open class BaseFragment : Fragment() {
 
     protected open lateinit var viewModel: BaseViewModel

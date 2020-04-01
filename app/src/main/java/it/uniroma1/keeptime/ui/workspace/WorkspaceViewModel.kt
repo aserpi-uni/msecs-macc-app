@@ -24,12 +24,7 @@ class WorkspaceViewModel : BaseViewModel() {
         } catch (error: AuthFailureError) {
             _logoutMessage.value = R.string.failed_wrong_credentials
         } catch (error: VolleyError) {
-            _message.value = when(error) {
-                is NoConnectionError, is TimeoutError -> R.string.failed_no_response
-                is NetworkError -> R.string.failed_network
-                is ParseError, is ServerError -> R.string.failed_server
-                else -> R.string.failed_unknown
-            }
+            _message.value = volleyErrorMessage(error)
         } finally {
             _busy.value = false
         }

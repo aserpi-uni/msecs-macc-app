@@ -10,7 +10,6 @@ import org.json.JSONObject
 
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
-import it.uniroma1.keeptime.data.isUnprocessableEntity
 import it.uniroma1.keeptime.data.model.Worker
 import it.uniroma1.keeptime.ui.base.BaseViewModel
 
@@ -109,16 +108,8 @@ class UserPreferencesViewModel : BaseViewModel() {
             } catch (_: AuthFailureError) {
                 _logoutMessage.value = R.string.failed_wrong_credentials
             } catch (error: VolleyError) {
-                val errorMessage =
-                    if (error.isUnprocessableEntity()) R.string.failed_invalid_attribute else when (error) {
-                        is NoConnectionError, is TimeoutError -> R.string.failed_no_response
-                        is NetworkError -> R.string.failed_network
-                        is ParseError, is ServerError -> R.string.failed_server
-                        else -> R.string.failed_unknown
-                    }
-
                 _busy.value = false
-                _message.value = errorMessage
+                _message.value = volleyErrorMessage(error)
             }
         }
     }

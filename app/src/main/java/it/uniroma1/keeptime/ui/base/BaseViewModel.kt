@@ -21,7 +21,7 @@ import it.uniroma1.keeptime.data.isUnprocessableEntity
  * @property _logoutMessage See [logoutMessage].
  * @property _message See [message].
  */
-open class BaseViewModel : ViewModel() {
+abstract class BaseViewModel : ViewModel() {
     protected val _busy = MutableLiveData(false)
     val busy: LiveData<Boolean> = _busy
 

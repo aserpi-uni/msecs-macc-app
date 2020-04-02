@@ -2,16 +2,9 @@ package it.uniroma1.keeptime.data.model
 
 import android.icu.util.Currency
 import android.net.Uri
-import com.android.volley.Request
-import com.android.volley.Response
-import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
 
-import it.uniroma1.keeptime.KeepTime
-import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
 import it.uniroma1.keeptime.data.CurrencySerializer
 import it.uniroma1.keeptime.data.UriSerializer
 
@@ -29,7 +22,7 @@ open class Worker(
     WorkerReference(email, url) {
 
     @Serializer(forClass = Worker::class)
-    companion object : KSerializer<Worker> {
+    companion object : INetwork<Worker> {
         override val descriptor: SerialDescriptor = SerialDescriptor("Worker") {
             element<Int>("bill_rate_cents")
             element("currency", CurrencySerializer.descriptor)
@@ -83,26 +76,5 @@ open class Worker(
                 workspaces ?: throw MissingFieldException("workspaces")
             )
         }
-
-        /**
-         * Retrieves a worker from the server.
-         */
-        suspend fun fromServer(url: String): Worker = suspendCancellableCoroutine { cont ->
-            val request = AuthenticatedJsonObjectRequest(
-                Request.Method.GET, url, null,
-                Response.Listener { cont.resume(Json.parse(serializer(), it.toString())) { } },
-                Response.ErrorListener { cont.resumeWithException(it) })
-
-            KeepTime.instance.requestQueue.add(request)
-
-            cont.invokeOnCancellation {
-                request.cancel()
-            }
-        }
-
-        /**
-         * Retrieves a worker from the server.
-         */
-        suspend fun fromServer(url: Uri): Worker = fromServer(url.toString())
     }
 }

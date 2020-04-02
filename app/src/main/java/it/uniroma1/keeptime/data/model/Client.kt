@@ -1,16 +1,9 @@
 package it.uniroma1.keeptime.data.model
 
 import android.net.Uri
-import com.android.volley.Request
-import com.android.volley.Response
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
-import kotlin.coroutines.resumeWithException
 
-import it.uniroma1.keeptime.KeepTime
-import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
 import it.uniroma1.keeptime.data.UriSerializer
 
 /**
@@ -26,7 +19,7 @@ class Client(
 ) : ClientReference(name, url) {
 
     @Serializer(forClass = Client::class)
-    companion object : KSerializer<Client> {
+    companion object : INetwork<Client> {
         override val descriptor: SerialDescriptor = SerialDescriptor("Client") {
             element<Long>("color")
             element<String>("description")
@@ -80,26 +73,5 @@ class Client(
                 workspaces ?: throw MissingFieldException("workspaces")
             )
         }
-
-        /**
-         * Retrieves a client from the server.
-         */
-        suspend fun fromServer(url: String): Client = suspendCancellableCoroutine { cont ->
-            val request = AuthenticatedJsonObjectRequest(
-                Request.Method.GET, url, null,
-                Response.Listener { cont.resume(Json.parse(serializer(), it.toString())) { } },
-                Response.ErrorListener { cont.resumeWithException(it) })
-
-            KeepTime.instance.requestQueue.add(request)
-
-            cont.invokeOnCancellation {
-                request.cancel()
-            }
-        }
-
-        /**
-         * Retrieves a client from the server.
-         */
-        suspend fun fromServer(url: Uri): Client = fromServer(url.toString())
     }
 }

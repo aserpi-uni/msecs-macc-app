@@ -10,4 +10,7 @@ import it.uniroma1.keeptime.data.UriSerializer
  * Base class for clients. It contains only the client's url and its name.
  */
 @Serializable
-open class ClientReference(val name: String, @Serializable(with = UriSerializer::class) val url: Uri)
+open class ClientReference(val name: String, @Serializable(with = UriSerializer::class) val url: Uri) {
+
+    suspend fun fromServer(): Client = Client.fromServer(url)
+}

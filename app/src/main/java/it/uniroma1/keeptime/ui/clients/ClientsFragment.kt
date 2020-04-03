@@ -5,27 +5,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import it.uniroma1.keeptime.R
+import androidx.lifecycle.ViewModelProvider
 
-class ClientsFragment : Fragment() {
+import it.uniroma1.keeptime.R
+import it.uniroma1.keeptime.databinding.ClientsBinding
+import it.uniroma1.keeptime.ui.base.BaseFragment
+
+
+class ClientsFragment : BaseFragment() {
 
     private lateinit var clientsViewModel: ClientsViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        clientsViewModel =
-            ViewModelProviders.of(this).get(ClientsViewModel::class.java)
-        val root = inflater.inflate(R.layout.clients, container, false)
-        val textView: TextView = root.findViewById(R.id.text_tools)
-        clientsViewModel.text.observe(this, Observer {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        clientsViewModel = ViewModelProvider(this).get(ClientsViewModel::class.java)
+        viewModel = clientsViewModel
+
+        val binding = ClientsBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = clientsViewModel
+
+        val view = binding.root
+        val textView: TextView = view.findViewById(R.id.text_tools)
+        clientsViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
-        return root
+
+        return view
     }
 }

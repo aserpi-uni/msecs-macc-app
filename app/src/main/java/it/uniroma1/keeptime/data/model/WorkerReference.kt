@@ -1,7 +1,6 @@
 package it.uniroma1.keeptime.data.model
 
 import android.net.Uri
-import com.android.volley.VolleyError
 import it.uniroma1.keeptime.data.UriSerializer
 import kotlinx.serialization.*
 

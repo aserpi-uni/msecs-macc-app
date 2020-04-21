@@ -8,4 +8,10 @@ import kotlinx.serialization.Serializable
  * Base class for workspaces. It contains only the workspace's url and its name.
  */
 @Serializable
-open class WorkspaceReference(var name: String, @Serializable(with = UriSerializer::class) val url: Uri)
+open class WorkspaceReference(var name: String, @Serializable(with = UriSerializer::class) val url: Uri) {
+
+    /**
+     * Retrieves the workspace's attributes from the server.
+     */
+    suspend fun fromServer(): Workspace = Workspace.fromServer(url)
+}

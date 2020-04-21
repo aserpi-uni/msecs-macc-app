@@ -4,6 +4,7 @@ import android.net.Uri
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
 
+import it.uniroma1.keeptime.data.ColorSerializer
 import it.uniroma1.keeptime.data.UriSerializer
 
 /**
@@ -11,17 +12,17 @@ import it.uniroma1.keeptime.data.UriSerializer
  */
 @Serializable
 class Client(
-    val color: Long,
+    color: Int?,
     val description: String,
     name: String,
     url: Uri,
     val workspaces: List<WorkspaceReference>
-) : ClientReference(name, url) {
+) : ClientReference(color, name, url) {
 
     @Serializer(forClass = Client::class)
     companion object : INetwork<Client> {
         override val descriptor: SerialDescriptor = SerialDescriptor("Client") {
-            element<Long>("color")
+            element<Int>("color")
             element<String>("description")
             element<String>("name")
             element("url", UriSerializer.descriptor)
@@ -30,7 +31,7 @@ class Client(
 
         override fun serialize(encoder: Encoder, value: Client) {
             val compositeOutput = encoder.beginStructure(descriptor)
-            compositeOutput.encodeLongElement(descriptor, 0, value.color)
+            compositeOutput.encodeSerializableElement(descriptor, 0, ColorSerializer, value.color)
             compositeOutput.encodeStringElement(descriptor, 1, value.description)
             compositeOutput.encodeStringElement(descriptor, 2, value.name)
             compositeOutput.encodeSerializableElement(descriptor, 3, UriSerializer, value.url)
@@ -45,7 +46,7 @@ class Client(
 
         override fun deserialize(decoder: Decoder): Client {
             val dec: CompositeDecoder = decoder.beginStructure(descriptor)
-            var color: Long? = null
+            var color: Int? = null
             var description: String? = null
             var name: String? = null
             var url: Uri? = null
@@ -53,7 +54,7 @@ class Client(
             loop@ while(true) {
                 when(val i = dec.decodeElementIndex(descriptor)) {
                     CompositeDecoder.READ_DONE -> break@loop
-                    0 -> color = dec.decodeLongElement(descriptor, 0)
+                    0 -> color = dec.decodeSerializableElement(descriptor, 0, ColorSerializer)
                     1 -> description = dec.decodeStringElement(descriptor, 1)
                     2 -> name = dec.decodeStringElement(descriptor, 2)
                     3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)

@@ -17,6 +17,7 @@ open class Worker(
     var currency: Currency,
     email: String,
     url: Uri,
+    val clients: List<ClientReference>,
     val workspaces: List<WorkspaceReference>
 ) :
     WorkerReference(email, url) {
@@ -28,6 +29,7 @@ open class Worker(
             element("currency", CurrencySerializer.descriptor)
             element<String>("email")
             element("url", UriSerializer.descriptor)
+            element<List<ClientReference>>("clients")
             element<List<WorkspaceReference>>("workspaces")
         }
 
@@ -40,6 +42,12 @@ open class Worker(
             compositeOutput.encodeSerializableElement(
                 descriptor,
                 4,
+                ListSerializer(ClientReference.serializer()),
+                value.clients
+            )
+            compositeOutput.encodeSerializableElement(
+                descriptor,
+                5,
                 ListSerializer(WorkspaceReference.serializer()),
                 value.workspaces
             )
@@ -52,17 +60,20 @@ open class Worker(
             var currency: Currency? = null
             var email: String? = null
             var url: Uri? = null
+            var clients: List<ClientReference>? = null
             var workspaces: List<WorkspaceReference>? = null
-            loop@ while(true) {
-                when(val i = dec.decodeElementIndex(descriptor)) {
+            loop@ while (true) {
+                when (val i = dec.decodeElementIndex(descriptor)) {
                     CompositeDecoder.READ_DONE -> break@loop
                     0 -> billRate = dec.decodeIntElement(descriptor, 0) / 100.0
                     1 -> currency = dec.decodeSerializableElement(descriptor, 1, CurrencySerializer)
                     2 -> email = dec.decodeStringElement(descriptor, 2)
                     3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)
-                    4 -> workspaces =
+                    4 -> clients =
+                        dec.decodeSerializableElement(descriptor, 4, ListSerializer(ClientReference.serializer()))
+                    5 -> workspaces =
                         dec.decodeSerializableElement(
-                            descriptor, 4, ListSerializer(WorkspaceReference.serializer())
+                            descriptor, 5, ListSerializer(WorkspaceReference.serializer())
                         )
                     else -> throw SerializationException("Unknown index $i")
                 }
@@ -73,6 +84,7 @@ open class Worker(
                 currency ?: throw MissingFieldException("currency"),
                 email ?: throw MissingFieldException("email"),
                 url ?: throw MissingFieldException("url"),
+                clients ?: throw MissingFieldException("clients"),
                 workspaces ?: throw MissingFieldException("workspaces")
             )
         }

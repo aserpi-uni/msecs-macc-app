@@ -4,28 +4,72 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.fragment.app.Fragment
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import it.uniroma1.keeptime.R
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.clients.*
 
-class ClientsFragment : Fragment() {
+import it.uniroma1.keeptime.R
+import it.uniroma1.keeptime.data.LoginRepository
+import it.uniroma1.keeptime.data.model.ClientReference
+import it.uniroma1.keeptime.data.model.Worker
+import it.uniroma1.keeptime.databinding.ClientsBinding
+import it.uniroma1.keeptime.ui.base.BaseFragment
+
+
+class ClientsFragment : BaseFragment() {
 
     private lateinit var clientsViewModel: ClientsViewModel
+    private lateinit var clientsAdapter: ClientsAdapter
+    private lateinit var clientsLayoutManager: LinearLayoutManager
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        clientsViewModel =
-            ViewModelProviders.of(this).get(ClientsViewModel::class.java)
-        val root = inflater.inflate(R.layout.clients, container, false)
-        val textView: TextView = root.findViewById(R.id.text_tools)
-        clientsViewModel.text.observe(this, Observer {
-            textView.text = it
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        clientsAdapter = ClientsAdapter((LoginRepository.user.value as Worker).clients, ::onClientClicked)
+        clientsLayoutManager = LinearLayoutManager(context)
+        clientsViewModel = ViewModelProvider(this).get(ClientsViewModel::class.java)
+        viewModel = clientsViewModel
+
+        val binding = DataBindingUtil.inflate<ClientsBinding>(
+            inflater,
+            R.layout.clients,
+            container,
+            false
+        )
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = clientsViewModel
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        clientsRecycler.apply {
+            adapter = clientsAdapter
+            layoutManager = clientsLayoutManager
+            addItemDecoration((DividerItemDecoration(context, clientsLayoutManager.orientation)))
+        }
+
+        clientsSwipe.setOnRefreshListener {
+            clientsViewModel.refreshClients()
+        }
+
+        LoginRepository.user.observe(viewLifecycleOwner, Observer {
+            if(it !is Worker) return@Observer
+
+            clientsAdapter.replace(it.clients)
+            clientsSwipe.isRefreshing = false
         })
-        return root
+
+        clientsViewModel.message.observe(viewLifecycleOwner, Observer {
+            val message = it ?: return@Observer
+            clientsSwipe.isRefreshing = false
+        })
+    }
+
+    private fun onClientClicked(client: ClientReference) {
+        // TODO: navigate to client page
     }
 }

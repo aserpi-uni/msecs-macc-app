@@ -1,13 +1,25 @@
 package it.uniroma1.keeptime.ui.clients
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.android.volley.*
+import kotlinx.coroutines.launch
 
-class ClientsViewModel : ViewModel() {
+import it.uniroma1.keeptime.R
+import it.uniroma1.keeptime.data.LoginRepository
+import it.uniroma1.keeptime.ui.base.BaseViewModel
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is tools Fragment"
+
+class ClientsViewModel : BaseViewModel() {
+    fun refreshClients() = viewModelScope.launch {
+        try {
+            _busy.value = true
+            LoginRepository.refreshUser()
+        } catch (error: AuthFailureError) {
+            _logoutMessage.value = R.string.failed_wrong_credentials
+        } catch (error: VolleyError) {
+            _message.value = volleyErrorMessage(error)
+        } finally {
+            _busy.value = false
+        }
     }
-    val text: LiveData<String> = _text
 }

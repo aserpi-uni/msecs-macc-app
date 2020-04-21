@@ -5,6 +5,32 @@ import android.net.Uri
 import kotlinx.serialization.*
 
 /**
+ * Serializer for colors.
+ */
+@Serializer(forClass = Int::class)
+object ColorSerializer: KSerializer<Int?> {
+    override val descriptor: SerialDescriptor = PrimitiveDescriptor("Color", PrimitiveKind.INT)
+
+    // -16777216 (0xFF000000) to add opacity
+
+    override fun serialize(encoder: Encoder, value: Int?) {
+        if(value == null) {
+            encoder.encodeNull()
+        } else {
+            encoder.encodeInt(value + 16777216)
+        }
+    }
+
+    override fun deserialize(decoder: Decoder): Int? {
+        return try {
+            decoder.decodeInt() - 16777216
+        } catch (e: Exception) {
+            decoder.decodeNull()
+        }
+    }
+}
+
+/**
  * Serializer for [Uri].
  */
 @Serializer(forClass = Uri::class)

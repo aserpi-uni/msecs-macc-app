@@ -46,7 +46,7 @@ object LoginRepository {
      * @see loginWithGoogle
      */
     suspend fun googleOauthId(server_: String): String {
-        val serverBuilder = Uri.parse(if(server_.startsWith("https")) server_ else "https://$server_").buildUpon()
+        val serverBuilder = Uri.parse(if(server_.startsWith("http")) server_ else "http://$server_").buildUpon()
         server = serverBuilder.build().toString()
         serverBuilder.appendPath("google_oauth").appendPath("id")
 
@@ -70,7 +70,7 @@ object LoginRepository {
      */
     suspend fun loginWithEmail(email_: String, password: String, server_: String) {
         try {
-            server = if (server_.startsWith("https")) server_ else "https://$server_"
+            server = if (server_.startsWith("http")) server_ else "http://$server_"
             onLoginSuccess(authenticateWithEmail(email_, password))
         } catch (error: VolleyError) {
             onLoginFailure(error)
@@ -103,7 +103,7 @@ object LoginRepository {
 
         authenticationToken = savedCredentials.third
         _user.value = WorkerReference(savedCredentials.second, savedCredentials.first)
-        server = Regex("(https:\\/\\/[^\\/]*)\\S*").matchEntire(savedCredentials.first)!!.groupValues[1]
+        server = Regex("(http:\\/\\/[^\\/]*)\\S*").matchEntire(savedCredentials.first)!!.groupValues[1]
 
         try {
             refreshUser()

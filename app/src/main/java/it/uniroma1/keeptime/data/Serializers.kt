@@ -3,6 +3,8 @@ package it.uniroma1.keeptime.data
 import android.icu.util.Currency
 import android.net.Uri
 import kotlinx.serialization.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Serializer for colors.
@@ -27,6 +29,26 @@ object ColorSerializer: KSerializer<Int?> {
         } catch (e: Exception) {
             decoder.decodeNull()
         }
+    }
+}
+
+/**
+ * Serializer for dates.
+ */
+@Serializer(forClass = Date::class)
+object DateSerializer: KSerializer<Date> {
+    override val descriptor: SerialDescriptor = PrimitiveDescriptor("Date", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: Date) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        encoder.encodeString(sdf.format(value))
+    }
+
+    override fun deserialize(decoder: Decoder): Date {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        return sdf.parse(decoder.decodeString())!!
     }
 }
 

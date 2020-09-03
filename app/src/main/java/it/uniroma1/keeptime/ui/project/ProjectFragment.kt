@@ -36,7 +36,11 @@ class ProjectFragment : BaseFragment() {
         infoItem.isVisible = true
         infoItem.setOnMenuItemClickListener {
             if(projectViewModel.project.value == null) return@setOnMenuItemClickListener true
-            ModalBottomSheet(projectViewModel.project.value!!.description).show(parentFragmentManager, "info")
+            ModalBottomSheet(
+                projectViewModel.project.value!!.description,
+                projectViewModel.project.value!!.status,
+                projectViewModel.project.value!!.deliveryTime
+            ).show(parentFragmentManager, "info")
             true
         }
 

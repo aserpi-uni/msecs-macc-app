@@ -12,6 +12,7 @@
     <string name="refresh">Refresh</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
+    <string name="status">Status</string>
 
     <!-- Strings related to login -->
     <string name="action_sign_in">Sign in</string>

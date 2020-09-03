@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 
 import it.uniroma1.keeptime.R
-import it.uniroma1.keeptime.data.model.Activity
+import it.uniroma1.keeptime.data.model.ActivityReference
 
 // TODO: use Material's one-line list when it will become public
-class ActivitiesAdapter(activities_: List<Activity>, private val onClick: (Activity) -> Any) :
+class ActivitiesAdapter(activities_: List<ActivityReference>, private val onClick: (ActivityReference) -> Any) :
     RecyclerView.Adapter<ActivitiesAdapter.ActivityViewHolder>() {
 
     private val activities = activities_.toMutableList()
@@ -44,7 +44,7 @@ class ActivitiesAdapter(activities_: List<Activity>, private val onClick: (Activ
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = activities.size
 
-    fun replace(activities_: List<Activity>) {
+    fun replace(activities_: List<ActivityReference>) {
         activities.clear()
         activities.addAll(activities_)
         notifyDataSetChanged()

@@ -18,7 +18,7 @@ open class Project(
     projectName: String,
     val status: String,
     url: Uri,
-    val activities: List<Activity>,
+    val activities: List<ActivityReference>,
     val workspace: WorkspaceReference
 ) : ProjectReference(projectName, url) {
 
@@ -30,7 +30,7 @@ open class Project(
             element<String>("projectName")
             element<String>("status")
             element("url", UriSerializer.descriptor)
-            element<List<Activity>>("activities")
+            element<List<ActivityReference>>("activities")
             element<WorkspaceReference>("workspace")
         }
 
@@ -44,7 +44,7 @@ open class Project(
             compositeOutput.encodeSerializableElement(
                 descriptor,
                 5,
-                ListSerializer(Activity.serializer()),
+                ListSerializer(ActivityReference.serializer()),
                 value.activities
             )
             compositeOutput.encodeSerializableElement(
@@ -63,7 +63,7 @@ open class Project(
             var projectName: String? = null
             var status: String? = null
             var url: Uri? = null
-            var activities: List<Activity>? = null
+            var activities: List<ActivityReference>? = null
             var workspace: WorkspaceReference? = null
             loop@ while(true) {
                 when(val i = dec.decodeElementIndex(descriptor)) {
@@ -74,7 +74,7 @@ open class Project(
                     3 -> status = dec.decodeStringElement(descriptor, 3)
                     4 -> url = dec.decodeSerializableElement(descriptor, 4, UriSerializer)
                     5 -> activities = dec.decodeSerializableElement(
-                        descriptor, 5, ListSerializer(Activity.serializer())
+                        descriptor, 5, ListSerializer(ActivityReference.serializer())
                     )
                     6 -> workspace = dec.decodeSerializableElement(
                             descriptor, 6, WorkspaceReference.serializer()

@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.project.*
 import kotlinx.serialization.json.Json
 
 import it.uniroma1.keeptime.R
-import it.uniroma1.keeptime.data.model.Activity
+import it.uniroma1.keeptime.data.model.ActivityReference
 import it.uniroma1.keeptime.data.model.Project
 import it.uniroma1.keeptime.data.model.ProjectReference
 import it.uniroma1.keeptime.databinding.ProjectBinding
@@ -102,10 +102,10 @@ class ProjectFragment : BaseFragment() {
         projectViewModel.refreshProject(projectReference)
     }
 
-    private fun onActivityClicked(activity: Activity) {
+    private fun onActivityClicked(activity: ActivityReference) {
         /*
         val action = ProjectFragmentDirections.actionToWorkspace(
-            activity.description, Json.stringify(Activity.serializer(), activity)
+            activity.description, Json.stringify(ActivityReference.serializer(), activity)
         )
         findNavController().navigate(action)
          */

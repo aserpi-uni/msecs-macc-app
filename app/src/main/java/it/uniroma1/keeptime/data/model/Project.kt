@@ -23,7 +23,7 @@ open class Project(
     @Serializer(forClass = Project::class)
     companion object : INetwork<Project> {
         override val descriptor: SerialDescriptor = SerialDescriptor("Project") {
-            element<Date>("deliveryTime")
+            element("deliveryTime", DateSerializer.descriptor)
             element<String>("description")
             element<String>("projectName")
             element<String>("status")

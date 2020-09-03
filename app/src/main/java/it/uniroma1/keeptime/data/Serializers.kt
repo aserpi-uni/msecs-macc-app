@@ -40,13 +40,13 @@ object DateSerializer: KSerializer<Date> {
     override val descriptor: SerialDescriptor = PrimitiveDescriptor("Date", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: Date) {
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         sdf.timeZone = TimeZone.getTimeZone("UTC")
         encoder.encodeString(sdf.format(value))
     }
 
     override fun deserialize(decoder: Decoder): Date {
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         sdf.timeZone = TimeZone.getTimeZone("UTC")
         return sdf.parse(decoder.decodeString())!!
     }

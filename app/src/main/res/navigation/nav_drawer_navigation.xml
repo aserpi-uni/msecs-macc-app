@@ -58,5 +58,20 @@
         <argument
             android:name="workspaceJson"
             app:argType="string" />
+        <action
+            android:id="@+id/actionToProject"
+            app:destination="@id/projectFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/projectFragment"
+        android:name="it.uniroma1.keeptime.ui.project.ProjectFragment"
+        android:label="{projectName}">
+        <argument
+            android:name="projectName"
+            android:defaultValue="Project"
+            app:argType="string" />
+        <argument
+            android:name="projectJson"
+            app:argType="string" />
     </fragment>
 </navigation>

@@ -72,11 +72,9 @@ class ProjectsFragment : BaseFragment() {
     }
 
     private fun onProjectClicked(project: ProjectReference) {
-        /*
         val action = ProjectsFragmentDirections.actionToProject(
             project.projectName, Json.stringify(ProjectReference.serializer(), project)
         )
         findNavController().navigate(action)
-        */
     }
 }

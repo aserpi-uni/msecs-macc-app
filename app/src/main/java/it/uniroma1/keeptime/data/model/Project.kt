@@ -4,6 +4,7 @@ import android.net.Uri
 import it.uniroma1.keeptime.data.DateSerializer
 import it.uniroma1.keeptime.data.UriSerializer
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.ListSerializer
 import java.util.*
 
 
@@ -17,6 +18,7 @@ open class Project(
     projectName: String,
     val status: String,
     url: Uri,
+    val activities: List<Activity>,
     val workspace: WorkspaceReference
 ) : ProjectReference(projectName, url) {
 
@@ -28,6 +30,7 @@ open class Project(
             element<String>("projectName")
             element<String>("status")
             element("url", UriSerializer.descriptor)
+            element<List<Activity>>("activities")
             element<WorkspaceReference>("workspace")
         }
 
@@ -41,6 +44,12 @@ open class Project(
             compositeOutput.encodeSerializableElement(
                 descriptor,
                 5,
+                ListSerializer(Activity.serializer()),
+                value.activities
+            )
+            compositeOutput.encodeSerializableElement(
+                descriptor,
+                6,
                 WorkspaceReference.serializer(),
                 value.workspace
             )
@@ -54,6 +63,7 @@ open class Project(
             var projectName: String? = null
             var status: String? = null
             var url: Uri? = null
+            var activities: List<Activity>? = null
             var workspace: WorkspaceReference? = null
             loop@ while(true) {
                 when(val i = dec.decodeElementIndex(descriptor)) {
@@ -63,8 +73,11 @@ open class Project(
                     2 -> projectName = dec.decodeStringElement(descriptor, 2)
                     3 -> status = dec.decodeStringElement(descriptor, 3)
                     4 -> url = dec.decodeSerializableElement(descriptor, 4, UriSerializer)
-                    5 -> workspace = dec.decodeSerializableElement(
-                            descriptor, 5, WorkspaceReference.serializer()
+                    5 -> activities = dec.decodeSerializableElement(
+                        descriptor, 5, ListSerializer(Activity.serializer())
+                    )
+                    6 -> workspace = dec.decodeSerializableElement(
+                            descriptor, 6, WorkspaceReference.serializer()
                     )
                     else -> throw SerializationException("Unknown index $i")
                 }
@@ -76,6 +89,7 @@ open class Project(
                 projectName ?: throw MissingFieldException("name"),
                 status ?: throw MissingFieldException("status"),
                 url ?: throw MissingFieldException("url"),
+                activities ?: throw MissingFieldException("activities"),
                 workspace ?: throw MissingFieldException("workspace")
             )
         }

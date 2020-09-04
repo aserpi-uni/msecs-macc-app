@@ -5,9 +5,9 @@ import java.util.*
 
 fun statusColor(status: String, deliveryDate: Date): Int {
     return when {
-        status == "finished" -> Color.GREEN
+        status == "finished" -> Color.parseColor("#00b248")  // Green
         status == "undefined" -> Color.GRAY
-        deliveryDate.after(Date()) -> Color.RED
-        else -> Color.GREEN
+        deliveryDate.before(Date()) -> Color.parseColor("#c62828")  // Red
+        else -> Color.parseColor("#304ffe")  // Blue
     }
 }

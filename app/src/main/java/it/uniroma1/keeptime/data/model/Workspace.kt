@@ -13,6 +13,7 @@ import it.uniroma1.keeptime.data.UriSerializer
 @Serializable
 open class Workspace(
     val description: String,
+    val master: Boolean,
     name: String,
     url: Uri,
     val workers: List<WorkerReference>
@@ -22,6 +23,7 @@ open class Workspace(
     companion object : INetwork<Workspace> {
         override val descriptor: SerialDescriptor = SerialDescriptor("Workspace") {
             element<String>("description")
+            element<Boolean>("master")
             element<String>("name")
             element("url", UriSerializer.descriptor)
             element<List<WorkerReference>>("workers")
@@ -30,11 +32,12 @@ open class Workspace(
         override fun serialize(encoder: Encoder, value: Workspace) {
             val compositeOutput = encoder.beginStructure(descriptor)
             compositeOutput.encodeStringElement(descriptor, 0, value.description)
-            compositeOutput.encodeStringElement(descriptor, 1, value.name)
-            compositeOutput.encodeSerializableElement(descriptor, 2, UriSerializer, value.url)
+            compositeOutput.encodeBooleanElement(descriptor, 1, value.master)
+            compositeOutput.encodeStringElement(descriptor, 2, value.name)
+            compositeOutput.encodeSerializableElement(descriptor, 3, UriSerializer, value.url)
             compositeOutput.encodeSerializableElement(
                 descriptor,
-                3,
+                4,
                 ListSerializer(WorkerReference.serializer()),
                 value.workers
             )
@@ -44,6 +47,7 @@ open class Workspace(
         override fun deserialize(decoder: Decoder): Workspace {
             val dec: CompositeDecoder = decoder.beginStructure(descriptor)
             var description: String? = null
+            var master: Boolean? = null
             var name: String? = null
             var url: Uri? = null
             var workers: List<WorkerReference>? = null
@@ -51,10 +55,11 @@ open class Workspace(
                 when(val i = dec.decodeElementIndex(descriptor)) {
                     CompositeDecoder.READ_DONE -> break@loop
                     0 -> description = dec.decodeStringElement(descriptor, 0)
-                    1 -> name = dec.decodeStringElement(descriptor, 1)
-                    2 -> url = dec.decodeSerializableElement(descriptor, 2, UriSerializer)
-                    3 -> workers = dec.decodeSerializableElement(
-                            descriptor, 3, ListSerializer(WorkerReference.serializer())
+                    1 -> master = dec.decodeBooleanElement(descriptor, 1)
+                    2 -> name = dec.decodeStringElement(descriptor, 2)
+                    3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)
+                    4 -> workers = dec.decodeSerializableElement(
+                            descriptor, 4, ListSerializer(WorkerReference.serializer())
                     )
                     else -> throw SerializationException("Unknown index $i")
                 }
@@ -62,6 +67,7 @@ open class Workspace(
             dec.endStructure(descriptor)
             return Workspace(
                 description ?: throw MissingFieldException("description"),
+                master ?: throw MissingFieldException("master"),
                 name ?: throw MissingFieldException("name"),
                 url ?: throw MissingFieldException("url"),
                 workers ?: throw MissingFieldException("workers")

@@ -19,6 +19,7 @@ open class Project(
     val status: String,
     url: Uri,
     val activities: List<ActivityReference>,
+    val client: ClientReference,
     val workspace: WorkspaceReference
 ) : ProjectReference(projectName, url) {
 
@@ -31,6 +32,7 @@ open class Project(
             element<String>("status")
             element("url", UriSerializer.descriptor)
             element<List<ActivityReference>>("activities")
+            element<ClientReference>("client")
             element<WorkspaceReference>("workspace")
         }
 
@@ -50,6 +52,12 @@ open class Project(
             compositeOutput.encodeSerializableElement(
                 descriptor,
                 6,
+                ClientReference.serializer(),
+                value.client
+            )
+            compositeOutput.encodeSerializableElement(
+                descriptor,
+                7,
                 WorkspaceReference.serializer(),
                 value.workspace
             )
@@ -64,6 +72,7 @@ open class Project(
             var status: String? = null
             var url: Uri? = null
             var activities: List<ActivityReference>? = null
+            var client: ClientReference? = null
             var workspace: WorkspaceReference? = null
             loop@ while(true) {
                 when(val i = dec.decodeElementIndex(descriptor)) {
@@ -76,8 +85,11 @@ open class Project(
                     5 -> activities = dec.decodeSerializableElement(
                         descriptor, 5, ListSerializer(ActivityReference.serializer())
                     )
-                    6 -> workspace = dec.decodeSerializableElement(
-                            descriptor, 6, WorkspaceReference.serializer()
+                    6 -> client = dec.decodeSerializableElement(
+                        descriptor, 6, ClientReference.serializer()
+                    )
+                    7 -> workspace = dec.decodeSerializableElement(
+                            descriptor, 7, WorkspaceReference.serializer()
                     )
                     else -> throw SerializationException("Unknown index $i")
                 }
@@ -90,6 +102,7 @@ open class Project(
                 status ?: throw MissingFieldException("status"),
                 url ?: throw MissingFieldException("url"),
                 activities ?: throw MissingFieldException("activities"),
+                client ?: throw MissingFieldException("client"),
                 workspace ?: throw MissingFieldException("workspace")
             )
         }

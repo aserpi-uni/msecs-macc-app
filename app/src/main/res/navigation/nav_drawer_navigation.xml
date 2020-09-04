@@ -25,7 +25,11 @@
         android:id="@+id/nav_projects"
         android:name="it.uniroma1.keeptime.ui.projects.ProjectsFragment"
         android:label="@string/menu_projects"
-        tools:layout="@layout/projects" />
+        tools:layout="@layout/projects" >
+        <action
+            android:id="@+id/actionToProject"
+            app:destination="@id/projectFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_clients"

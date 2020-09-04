@@ -3,6 +3,7 @@ package it.uniroma1.keeptime.data.model
 import android.net.Uri
 import it.uniroma1.keeptime.data.DateSerializer
 import it.uniroma1.keeptime.data.UriSerializer
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.*
 import java.util.*
 
@@ -16,7 +17,9 @@ open class Activity(
     description: String,
     status: String,
     url: Uri,
-    val project: ProjectReference) : ActivityReference(deliveryTime, description, status, url) {
+    val project: ProjectReference,
+    val subactivities: List<SubactivityReference>
+) : ActivityReference(deliveryTime, description, status, url) {
 
     @Serializer(forClass = Activity::class)
     companion object : INetwork<Activity> {
@@ -26,6 +29,7 @@ open class Activity(
             element<String>("status")
             element("url", UriSerializer.descriptor)
             element<ProjectReference>("project")
+            element<List<SubactivityReference>>("subactivities")
         }
 
         override fun serialize(encoder: Encoder, value: Activity) {
@@ -40,6 +44,12 @@ open class Activity(
                 ProjectReference.serializer(),
                 value.project
             )
+            compositeOutput.encodeSerializableElement(
+                descriptor,
+                5,
+                ListSerializer(SubactivityReference.serializer()),
+                value.subactivities
+            )
             compositeOutput.endStructure(descriptor)
         }
 
@@ -50,6 +60,7 @@ open class Activity(
             var status: String? = null
             var url: Uri? = null
             var project: ProjectReference? = null
+            var subactivities: List<SubactivityReference>? = null
             loop@ while(true) {
                 when(val i = dec.decodeElementIndex(descriptor)) {
                     CompositeDecoder.READ_DONE -> break@loop
@@ -60,6 +71,11 @@ open class Activity(
                     4 -> project = dec.decodeSerializableElement(
                             descriptor, 4, ProjectReference.serializer()
                     )
+                    5 -> subactivities = dec.decodeSerializableElement(
+                        descriptor,
+                        5,
+                        ListSerializer(SubactivityReference.serializer())
+                    )
                     else -> throw SerializationException("Unknown index $i")
                 }
             }
@@ -69,7 +85,8 @@ open class Activity(
                 description ?: throw MissingFieldException("description"),
                 status ?: throw MissingFieldException("status"),
                 url ?: throw MissingFieldException("url"),
-                project ?: throw MissingFieldException("project")
+                project ?: throw MissingFieldException("project"),
+                subactivities ?: throw MissingFieldException("subactivities")
             )
         }
     }

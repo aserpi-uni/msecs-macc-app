@@ -60,4 +60,5 @@ open class ActivityReference(
             )
         }
     }
+    suspend fun fromServer(): Activity = Activity.fromServer(url)
 }

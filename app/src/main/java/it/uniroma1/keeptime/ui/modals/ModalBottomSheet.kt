@@ -1,6 +1,5 @@
 package it.uniroma1.keeptime.ui.modals
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +8,7 @@ import android.widget.ImageView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textview.MaterialTextView
 import it.uniroma1.keeptime.R
+import it.uniroma1.keeptime.ui.statusColor
 import java.util.*
 
 
@@ -19,16 +19,11 @@ class ModalBottomSheet(private val description: String, private val status: Stri
         val view = inflater.inflate(R.layout.modal_bottom_sheet, container, false)
         view.findViewById<MaterialTextView>(R.id.modal_bottom_sheet_text).text = description
 
-        if (status != null) {
-            val statusColor: Int = when {
-                status == "finished" -> Color.GREEN
-                status == "undefined" -> Color.GRAY
-                deliveryDate?.after(Date()) != null -> Color.RED
-                else -> Color.GREEN
-            }
-            view.findViewById<ImageView>(R.id.modal_bottom_sheet_status).setColorFilter(statusColor)
+        val statusImage = view.findViewById<ImageView>(R.id.modal_bottom_sheet_status)
+        if (status != null && deliveryDate != null) {
+            statusImage.setColorFilter(statusColor(status, deliveryDate))
         } else {
-            view.findViewById<ImageView>(R.id.modal_bottom_sheet_status).visibility = View.GONE
+            statusImage.visibility = View.GONE
         }
 
         return view

@@ -18,7 +18,6 @@ import it.uniroma1.keeptime.data.model.ProjectReference
 import it.uniroma1.keeptime.databinding.ProjectBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
 import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
-import it.uniroma1.keeptime.ui.project.ProjectFragmentArgs
 
 
 class ProjectFragment : BaseFragment() {
@@ -37,9 +36,12 @@ class ProjectFragment : BaseFragment() {
         infoItem.setOnMenuItemClickListener {
             if(projectViewModel.project.value == null) return@setOnMenuItemClickListener true
             ModalBottomSheet(
+                projectViewModel.project.value!!.client.color,
+                projectViewModel.project.value!!.client.name,
                 projectViewModel.project.value!!.description,
+                projectViewModel.project.value!!.deliveryTime,
                 projectViewModel.project.value!!.status,
-                projectViewModel.project.value!!.deliveryTime
+                projectViewModel.project.value!!.workspace.name
             ).show(parentFragmentManager, "info")
             true
         }

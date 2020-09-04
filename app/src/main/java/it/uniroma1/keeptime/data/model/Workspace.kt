@@ -16,6 +16,7 @@ open class Workspace(
     val master: Boolean,
     name: String,
     url: Uri,
+    val projects: List<ProjectReference>,
     val workers: List<WorkerReference>
 ) : WorkspaceReference(name, url) {
 
@@ -26,6 +27,7 @@ open class Workspace(
             element<Boolean>("master")
             element<String>("name")
             element("url", UriSerializer.descriptor)
+            element<List<ProjectReference>>("projects")
             element<List<WorkerReference>>("workers")
         }
 
@@ -38,6 +40,12 @@ open class Workspace(
             compositeOutput.encodeSerializableElement(
                 descriptor,
                 4,
+                ListSerializer(ProjectReference.serializer()),
+                value.projects
+            )
+            compositeOutput.encodeSerializableElement(
+                descriptor,
+                5,
                 ListSerializer(WorkerReference.serializer()),
                 value.workers
             )
@@ -50,6 +58,7 @@ open class Workspace(
             var master: Boolean? = null
             var name: String? = null
             var url: Uri? = null
+            var projects: List<ProjectReference>? = null
             var workers: List<WorkerReference>? = null
             loop@ while(true) {
                 when(val i = dec.decodeElementIndex(descriptor)) {
@@ -58,8 +67,11 @@ open class Workspace(
                     1 -> master = dec.decodeBooleanElement(descriptor, 1)
                     2 -> name = dec.decodeStringElement(descriptor, 2)
                     3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)
-                    4 -> workers = dec.decodeSerializableElement(
-                            descriptor, 4, ListSerializer(WorkerReference.serializer())
+                    4 -> projects = dec.decodeSerializableElement(
+                        descriptor, 4, ListSerializer(ProjectReference.serializer())
+                    )
+                    5 -> workers = dec.decodeSerializableElement(
+                            descriptor, 5, ListSerializer(WorkerReference.serializer())
                     )
                     else -> throw SerializationException("Unknown index $i")
                 }
@@ -70,6 +82,7 @@ open class Workspace(
                 master ?: throw MissingFieldException("master"),
                 name ?: throw MissingFieldException("name"),
                 url ?: throw MissingFieldException("url"),
+                projects ?: throw MissingFieldException("projects"),
                 workers ?: throw MissingFieldException("workers")
             )
         }

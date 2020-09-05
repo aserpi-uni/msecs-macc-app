@@ -13,6 +13,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.data.model.Subactivity
+import it.uniroma1.keeptime.databinding.NewSubactivityFragmentBinding
 
 import it.uniroma1.keeptime.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.user_preferences_fragment.view.*
@@ -33,7 +34,7 @@ class NewSubactivity : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         newSubactivityViewModel = ViewModelProvider(this).get(NewSubactivityViewModel::class.java)
         viewModel = newSubactivityViewModel
-        val binding = DataBindingUtil.inflate<NewSubactivitiesFragmentBinding>(
+        val binding = DataBindingUtil.inflate<NewSubactivityFragmentBinding>(
             inflater,
             R.layout.new_subactivity_fragment,
             container,
@@ -41,7 +42,7 @@ class NewSubactivity : BaseFragment() {
         )
 
         binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = newSubactivitiesViewModel
+        binding.viewModel = newSubactivityViewModel
         return binding.root
     }
 
@@ -56,7 +57,7 @@ class NewSubactivity : BaseFragment() {
                 .setSingleChoiceItems(allCurrencies.map { it.displayName }.toTypedArray(), selectedIdx) { _, idx ->
                     selectedIdx = idx
                 }
-                .setPositiveButton(R.string.save) { _, _ -> newSubactivitiesViewModel.setCurrency(allCurrencies[selectedIdx]) }
+                .setPositiveButton(R.string.save) { _, _ -> newSubactivityViewModel.setCurrency(allCurrencies[selectedIdx]) }
                 .setNegativeButton(R.string.cancel, null).show()
         }
     }
@@ -68,7 +69,7 @@ class NewSubactivity : BaseFragment() {
         val logoutItem = menu.findItem(R.id.action_logout)
         logoutItem.isVisible = true
         logoutItem.setOnMenuItemClickListener {
-            newSubactivitiesViewModel.logout()
+            newSubactivityViewModel.logout()
             true
         }
     }

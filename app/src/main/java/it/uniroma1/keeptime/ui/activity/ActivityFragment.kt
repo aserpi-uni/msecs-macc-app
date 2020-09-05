@@ -1,11 +1,11 @@
 package it.uniroma1.keeptime.ui.activity
 
 import android.os.Bundle
-import android.text.TextUtils.replace
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,8 +19,6 @@ import it.uniroma1.keeptime.data.model.ActivityReference
 import it.uniroma1.keeptime.databinding.ActivityBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
 import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
-
-
 
 
 class ActivityFragment : BaseFragment() {
@@ -58,7 +56,11 @@ class ActivityFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         activityReference = Json.parse(ActivityReference.serializer(), args.activityJson)
 
-        subactivitiesAdapter = SubactivitiesAdapter(emptyList(), ::onSubactivityClicked)
+        subactivitiesAdapter =
+            SubactivitiesAdapter(
+                emptyList(),
+                ::onSubactivityClicked
+            )
         subactivitiesLayoutManager = LinearLayoutManager(context)
         activityViewModel = ViewModelProvider(this).get(ActivityViewModel::class.java)
         viewModel = activityViewModel
@@ -105,11 +107,11 @@ class ActivityFragment : BaseFragment() {
     }
 
     private fun onSubactivityClicked(Subactivity: SubactivityReference) {
-        /*
-        val action = ProjectFragmentDirections.actionToWorkspace(
+
+        val action = ActivityFragmentDirections.actionToSubactivity(
             Subactivity.description, Json.stringify(SubactivityReference.serializer(), Subactivity)
         )
         findNavController().navigate(action)
-         */
+
     }
 }

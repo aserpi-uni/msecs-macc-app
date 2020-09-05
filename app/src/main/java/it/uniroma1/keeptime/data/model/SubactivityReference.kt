@@ -60,4 +60,5 @@ open class SubactivityReference(
             )
         }
     }
+    suspend fun fromServer(): Subactivity = Subactivity.fromServer(url)
 }

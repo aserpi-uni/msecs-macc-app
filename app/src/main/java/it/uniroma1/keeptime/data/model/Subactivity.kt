@@ -20,6 +20,7 @@ open class Subactivity(
     val worker_1: WorkerReference,
     val worker_2: WorkerReference,
     val worker_3: WorkerReference,
+    val workingschedules: List<WorkingscheduleReference>,
     url: Uri
     ) : SubactivityReference(deliveryTime, description, status, url) {
 
@@ -33,6 +34,7 @@ open class Subactivity(
             element<WorkerReference>("worker_1")
             element<WorkerReference>("worker_2")
             element<WorkerReference>("worker_3")
+            element<List<WorkingscheduleReference>>("workingschedules")
             element("url", UriSerializer.descriptor)
         }
 
@@ -66,8 +68,14 @@ open class Subactivity(
                 WorkerReference.serializer(),
                 value.worker_3
             )
+            compositeOutput.encodeSerializableElement(
+                descriptor,
+                7,
+                ListSerializer(WorkingscheduleReference.serializer()),
+                value.workingschedules
+            )
 
-            compositeOutput.encodeSerializableElement(descriptor, 7, UriSerializer, value.url)
+            compositeOutput.encodeSerializableElement(descriptor, 8, UriSerializer, value.url)
             compositeOutput.endStructure(descriptor)
         }
 
@@ -80,6 +88,7 @@ open class Subactivity(
             var worker_1: WorkerReference? = null
             var worker_2: WorkerReference? = null
             var worker_3: WorkerReference? = null
+            var workingschedules: List<WorkingscheduleReference>? = null
             var url: Uri? = null
             loop@ while(true) {
                 when(val i = dec.decodeElementIndex(descriptor)) {
@@ -91,7 +100,8 @@ open class Subactivity(
                     4 -> worker_1 = dec.decodeSerializableElement(descriptor, 4, WorkerReference.serializer())
                     5 -> worker_2 = dec.decodeSerializableElement(descriptor, 5, WorkerReference.serializer())
                     6 -> worker_3 = dec.decodeSerializableElement(descriptor, 6, WorkerReference.serializer())
-                    7 -> url = dec.decodeSerializableElement(descriptor, 7, UriSerializer)
+                    7 -> workingschedules = dec.decodeSerializableElement(descriptor, 7, ListSerializer(WorkingscheduleReference.serializer()))
+                    8 -> url = dec.decodeSerializableElement(descriptor, 7, UriSerializer)
                     else -> throw SerializationException("Unknown index $i")
                 }
             }
@@ -104,6 +114,7 @@ open class Subactivity(
                 worker_1?: throw MissingFieldException("worker_1"),
                 worker_2 ?: throw MissingFieldException("worker_2"),
                 worker_3 ?: throw MissingFieldException("worker_3"),
+                workingschedules ?: throw MissingFieldException("workingschedules"),
                 url ?: throw MissingFieldException("url")
             )
         }

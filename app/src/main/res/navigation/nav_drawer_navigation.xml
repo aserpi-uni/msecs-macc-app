@@ -91,5 +91,19 @@
         <argument
             android:name="activityJson"
             app:argType="string" />
+        <action
+            android:id="@+id/actionToSubactivity"
+            app:destination="@id/subactivityFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/subactivityFragment"
+        android:name="it.uniroma1.keeptime.ui.subactivity.SubactivityFragment"
+        android:label="{description}">
+        <argument
+            android:name="description"
+            app:argType="string" />
+        <argument
+            android:name="subactivityJson"
+            app:argType="string" />
     </fragment>
 </navigation>

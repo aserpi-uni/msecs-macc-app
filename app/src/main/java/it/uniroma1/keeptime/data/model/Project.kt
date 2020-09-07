@@ -15,6 +15,7 @@ import java.util.*
 open class Project(
     val deliveryTime: Date,
     val description: String,
+    val master: Boolean,
     projectName: String,
     val status: String,
     url: Uri,
@@ -28,6 +29,7 @@ open class Project(
         override val descriptor: SerialDescriptor = SerialDescriptor("Project") {
             element("deliveryTime", DateSerializer.descriptor)
             element<String>("description")
+            element<Boolean>("master")
             element<String>("projectName")
             element<String>("status")
             element("url", UriSerializer.descriptor)
@@ -40,24 +42,25 @@ open class Project(
             val compositeOutput = encoder.beginStructure(descriptor)
             compositeOutput.encodeSerializableElement(descriptor, 0, DateSerializer, value.deliveryTime)
             compositeOutput.encodeStringElement(descriptor, 1, value.description)
-            compositeOutput.encodeStringElement(descriptor, 2, value.projectName)
-            compositeOutput.encodeStringElement(descriptor, 3, value.status)
-            compositeOutput.encodeSerializableElement(descriptor, 4, UriSerializer, value.url)
+            compositeOutput.encodeBooleanElement(descriptor, 2, value.master)
+            compositeOutput.encodeStringElement(descriptor, 3, value.projectName)
+            compositeOutput.encodeStringElement(descriptor, 4, value.status)
+            compositeOutput.encodeSerializableElement(descriptor, 5, UriSerializer, value.url)
             compositeOutput.encodeSerializableElement(
                 descriptor,
-                5,
+                6,
                 ListSerializer(ActivityReference.serializer()),
                 value.activities
             )
             compositeOutput.encodeSerializableElement(
                 descriptor,
-                6,
+                7,
                 ClientReference.serializer(),
                 value.client
             )
             compositeOutput.encodeSerializableElement(
                 descriptor,
-                7,
+                8,
                 WorkspaceReference.serializer(),
                 value.workspace
             )
@@ -68,6 +71,7 @@ open class Project(
             val dec: CompositeDecoder = decoder.beginStructure(descriptor)
             var deliveryTime: Date? = null
             var description: String? = null
+            var master: Boolean? = null
             var projectName: String? = null
             var status: String? = null
             var url: Uri? = null
@@ -79,17 +83,18 @@ open class Project(
                     CompositeDecoder.READ_DONE -> break@loop
                     0 -> deliveryTime = dec.decodeSerializableElement(descriptor, 0, DateSerializer)
                     1 -> description = dec.decodeStringElement(descriptor, 1)
-                    2 -> projectName = dec.decodeStringElement(descriptor, 2)
-                    3 -> status = dec.decodeStringElement(descriptor, 3)
-                    4 -> url = dec.decodeSerializableElement(descriptor, 4, UriSerializer)
-                    5 -> activities = dec.decodeSerializableElement(
-                        descriptor, 5, ListSerializer(ActivityReference.serializer())
+                    2 -> master = dec.decodeBooleanElement(descriptor, 2)
+                    3 -> projectName = dec.decodeStringElement(descriptor, 3)
+                    4 -> status = dec.decodeStringElement(descriptor, 4)
+                    5 -> url = dec.decodeSerializableElement(descriptor, 5, UriSerializer)
+                    6 -> activities = dec.decodeSerializableElement(
+                        descriptor, 6, ListSerializer(ActivityReference.serializer())
                     )
-                    6 -> client = dec.decodeSerializableElement(
-                        descriptor, 6, ClientReference.serializer()
+                    7 -> client = dec.decodeSerializableElement(
+                        descriptor, 7, ClientReference.serializer()
                     )
-                    7 -> workspace = dec.decodeSerializableElement(
-                            descriptor, 7, WorkspaceReference.serializer()
+                    8 -> workspace = dec.decodeSerializableElement(
+                            descriptor, 8, WorkspaceReference.serializer()
                     )
                     else -> throw SerializationException("Unknown index $i")
                 }
@@ -98,6 +103,7 @@ open class Project(
             return Project(
                 deliveryTime ?: throw MissingFieldException("deliveryTime"),
                 description ?: throw MissingFieldException("description"),
+                master ?: throw MissingFieldException("master"),
                 projectName ?: throw MissingFieldException("name"),
                 status ?: throw MissingFieldException("status"),
                 url ?: throw MissingFieldException("url"),

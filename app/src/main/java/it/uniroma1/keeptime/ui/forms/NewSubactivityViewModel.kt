@@ -1,20 +1,32 @@
 package it.uniroma1.keeptime.ui.forms
+import android.service.voice.AlwaysOnHotwordDetector
 import android.view.View
 import androidx.lifecycle.*
 import com.android.volley.*
+import it.uniroma1.keeptime.KeepTime
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 import it.uniroma1.keeptime.R
+import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
+import it.uniroma1.keeptime.data.DateSerializer
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.data.model.Worker
 import it.uniroma1.keeptime.data.model.WorkerReference
 import it.uniroma1.keeptime.ui.base.BaseViewModel
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
+import java.lang.reflect.GenericArrayType
 import java.util.*
+import kotlin.coroutines.resumeWithException
 
 class NewSubactivityViewModel : BaseViewModel() {
+    private val _workers = MutableLiveData<List<WorkerReference>>()
+    val workers : LiveData<List<WorkerReference>> = _workers
     val description = MutableLiveData<String>()
-    val deliveryDate = MutableLiveData<String>()
+    val _deliveryDate = MutableLiveData<Date>()
+    val deliveryDate = Transformations.map(_deliveryDate) {it.toString()}
     private val _worker_1 = MutableLiveData<WorkerReference>()
     val worker_1:LiveData<String> = Transformations.map(_worker_1){it.email ?: ""}
     fun setWorker1(worker_1:WorkerReference){
@@ -84,6 +96,8 @@ class NewSubactivityViewModel : BaseViewModel() {
         else {return true}
     }
 
+    var baseUrl: String = ""
+
     private fun isWorkerValid(worker: WorkerReference): Boolean {
         return worker != null
     }
@@ -92,13 +106,14 @@ class NewSubactivityViewModel : BaseViewModel() {
     }
 
     fun createSubactivity(view: View) {
-        val userParams = subactivityParams()
+        val subactivityParams = subactivityParams()
         _busy.value = true
+        val url = baseUrl.dropLast(5) + "/subactivities/new.json"
 
         viewModelScope.launch {
             try {
-                LoginRepository.updateUser(userParams)
-                _message.value = R.string.success_update
+                newSubactivity(url, subactivityParams)
+                _message.value = R.string.success_create
             } catch (_: AuthFailureError) {
                 _logoutMessage.value = R.string.failed_wrong_credentials
             } catch (error: VolleyError) {
@@ -111,22 +126,54 @@ class NewSubactivityViewModel : BaseViewModel() {
 
     private fun subactivityParams(): JSONObject {
         val subactivityParams = JSONObject()
-        val user = (LoginRepository.user.value as Worker)
+        subactivityParams.accumulate("description", description.value)
+        subactivityParams.accumulate("delivery_date", Json.stringify<Date>(DateSerializer, _deliveryDate.value!!))
+        subactivityParams.accumulate("worker_1", _worker_1.value!!.url)
+        subactivityParams.accumulate("worker_2", _worker_2.value!!.url)
+        subactivityParams.accumulate("worker_3", _worker_3.value!!.url)
+        subactivityParams.accumulate("status", "undefined")
 
-        /*if(! description.value.isNullOrEmpty())
-            subactivityParams.accumulate("description", description.value)
-        if(! deliveryDate.value.isNullOrEmpty()) {
-            subactivityParams.accumulate("delivery date", deliveryDate.value)
-        }
-        if(!worker_1.value.isNullOrEmpty()) {
-            subactivityParams.accumulate("worker_1", worker_1.value)
-        }
-        if(!worker_2.value.isNullOrEmpty()) {
-            subactivityParams.accumulate("worker_1", worker_2.value)
-        }
-        if(!worker_3.value.isNullOrEmpty()) {
-            subactivityParams.accumulate("worker_1", worker_3.value)
-        }*/
-        return subactivityParams
+        val new = JSONObject()
+        new.accumulate("subactivity", subactivityParams)
+        return new
     }
+    fun getWorkerIds(urlString: String) = viewModelScope.launch {
+        try {
+            _busy.value = true
+            _workers.value = getWorkers(urlString)
+        } catch (error:AuthFailureError){
+            _logoutMessage.value = R.string.failed_wrong_credentials
+        } catch(error:VolleyError){
+            _message.value = volleyErrorMessage(error)
+        }finally {
+            _busy.value = false
+        }
+    }
+
+    //function to invoke the get_worker_ids method from the server
+    private suspend fun getWorkers(url:String):List<WorkerReference> = suspendCancellableCoroutine{ cont ->
+        val request = AuthenticatedJsonObjectRequest(
+            Request.Method.GET, url,null,
+            Response.Listener {
+                cont.resume(Json.parse(ListSerializer(WorkerReference.serializer()), it.toString())) { }
+            },
+        Response.ErrorListener{cont.resumeWithException(it)}
+
+        )
+       KeepTime.instance.requestQueue.add(request)
+        cont.invokeOnCancellation { request.cancel() }
+    }
+    private suspend fun newSubactivity(url:String, payload: JSONObject):Unit = suspendCancellableCoroutine{ cont ->
+        val request = AuthenticatedJsonObjectRequest(
+            Request.Method.POST, url, payload,
+            Response.Listener {
+                cont.resume(Unit) { }
+            },
+            Response.ErrorListener{cont.resumeWithException(it)}
+
+        )
+        KeepTime.instance.requestQueue.add(request)
+        cont.invokeOnCancellation { request.cancel() }
+    }
+
 }

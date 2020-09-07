@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity.*
 import kotlinx.serialization.json.Json
 
@@ -19,6 +20,8 @@ import it.uniroma1.keeptime.data.model.ActivityReference
 import it.uniroma1.keeptime.databinding.ActivityBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
 import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
+import kotlinx.android.synthetic.main.activity.view.*
+import java.security.KeyStore
 
 
 class ActivityFragment : BaseFragment() {
@@ -80,7 +83,9 @@ class ActivityFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        view.new_subactivty_button.setOnClickListener(::onNewSubactivityClicked)
+        var visible = true
+        view.findViewById<FloatingActionButton>(R.id.new_subactivty_button).visibility = if(visible) View.VISIBLE else View.GONE
         subactivitiesRecycler.apply {
             adapter = subactivitiesAdapter
             layoutManager = subactivitiesLayoutManager
@@ -113,5 +118,11 @@ class ActivityFragment : BaseFragment() {
         )
         findNavController().navigate(action)
 
+    }
+    private fun onNewSubactivityClicked(view: View){
+        val action = ActivityFragmentDirections.actionToNewSubactivity(
+            args.workspaceUrl
+        )
+        findNavController().navigate(action)
     }
 }

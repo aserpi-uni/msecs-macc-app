@@ -16,6 +16,7 @@ import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.model.ActivityReference
 import it.uniroma1.keeptime.data.model.Project
 import it.uniroma1.keeptime.data.model.ProjectReference
+import it.uniroma1.keeptime.data.model.WorkspaceReference
 import it.uniroma1.keeptime.databinding.ProjectBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
 import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
@@ -108,7 +109,7 @@ class ProjectFragment : BaseFragment() {
     private fun onActivityClicked(activity: ActivityReference) {
 
         val action = ProjectFragmentDirections.actionToActivity(
-            activity.description, Json.stringify(ActivityReference.serializer(), activity)
+            activity.description ,Json.stringify(ActivityReference.serializer(), activity), projectViewModel.project.value!!.workspace.url.toString()
         )
         findNavController().navigate(action)
 

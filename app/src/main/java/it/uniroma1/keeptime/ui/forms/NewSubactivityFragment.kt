@@ -10,13 +10,15 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.data.model.Worker
-import it.uniroma1.keeptime.databinding.NewSubactivityFragmentBinding
+import it.uniroma1.keeptime.databinding.NewSubactivityBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
-import kotlinx.android.synthetic.main.new_subactivity_fragment.view.*
+import kotlinx.android.synthetic.main.new_subactivity.view.*
+import java.util.*
 
 
 class NewSubactivityFragment : BaseFragment() {
@@ -36,11 +38,11 @@ class NewSubactivityFragment : BaseFragment() {
         newSubactivityViewModel = ViewModelProvider(this).get(NewSubactivityViewModel::class.java)
         viewModel = newSubactivityViewModel
 
-        val binding = DataBindingUtil.inflate<NewSubactivityFragmentBinding>(
+        val binding = DataBindingUtil.inflate<NewSubactivityBinding>(
             inflater,
-            R.layout.new_subactivity_fragment,
+            R.layout.new_subactivity,
             container,
-            true
+            false
         )
 
         binding.lifecycleOwner = viewLifecycleOwner
@@ -52,16 +54,21 @@ class NewSubactivityFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         var date_text = view.findViewById(R.id.viewDate) as TextView
         var date_button  = view.findViewById(R.id.delivery_date_button) as Button
-        var calendar:Calendar
-        var datePicker:DatePickerDialog
+
+
 
         date_button.setOnClickListener({
-            val newFragment = DatePickerFragment()
-            newFragment.show(fragmentManager, "Date picker")
+            val builder = MaterialDatePicker.Builder.datePicker()
+            val today = MaterialDatePicker.todayInUtcMilliseconds()
+            builder.setSelection(today)
+            val picker = builder.build()
+            picker.show(childFragmentManager, picker.toString())
         })
 
 
-        val allCurrencies = Currency.getAvailableCurrencies().toList().sortedBy { it.displayName }
+
+
+        /*val allCurrencies = Currency.getAvailableCurrencies().toList().sortedBy { it.displayName }
         var selectedIdx = allCurrencies.indexOfFirst { it == (LoginRepository.user.value as Worker).currency }
         view.prompt_currency.setOnClickListener {
             MaterialAlertDialogBuilder(context)
@@ -71,7 +78,7 @@ class NewSubactivityFragment : BaseFragment() {
                 }
                 .setPositiveButton(R.string.save) { _, _ -> newSubactivityViewModel.setCurrency(allCurrencies[selectedIdx]) }
                 .setNegativeButton(R.string.cancel, null).show()
-        }
+        }*/
 
     }
 
@@ -79,5 +86,4 @@ class NewSubactivityFragment : BaseFragment() {
         super.onCreateOptionsMenu(menu, menuInflater)
         menu.findItem(R.id.action_settings).isVisible = false
     }
-
 }

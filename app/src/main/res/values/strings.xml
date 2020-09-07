@@ -61,6 +61,7 @@
     <string name="prompt_worker_2">Choose worker 2 </string>
     <string name="prompt_worker_3">Choose worker 3 </string>
     <string name="prompt_hours">Add working hours</string>
+    <string name="invalid_hours">The number of hours selected is not valid</string>
 
     <!-- Project -->
     <string name="project_commission">This project is followed by <font fgcolor="#FF0000">%1$s</font> for %2$s.</string>

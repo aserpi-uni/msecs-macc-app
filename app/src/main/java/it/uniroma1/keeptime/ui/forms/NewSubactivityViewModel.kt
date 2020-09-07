@@ -1,8 +1,5 @@
 package it.uniroma1.keeptime.ui.forms
-import android.icu.util.Currency
-import android.util.Patterns
 import android.view.View
-import android.view.animation.Transformation
 import androidx.lifecycle.*
 import com.android.volley.*
 import kotlinx.coroutines.launch
@@ -17,11 +14,22 @@ import java.util.*
 
 class NewSubactivityViewModel : BaseViewModel() {
     val description = MutableLiveData<String>()
-    val deliveryDate = MutableLiveData<Date>()
-    val worker_1 = MutableLiveData<WorkerReference>()
-    val worker_2 = MutableLiveData<WorkerReference>()
-    val worker_3 = MutableLiveData<WorkerReference>()
-
+    val deliveryDate = MutableLiveData<String>()
+    private val _worker_1 = MutableLiveData<WorkerReference>()
+    val worker_1:LiveData<String> = Transformations.map(_worker_1){it.email ?: ""}
+    fun setWorker1(worker_1:WorkerReference){
+        _worker_1.value = worker_1
+    }
+    private val _worker_2 = MutableLiveData<WorkerReference>()
+    val worker_2:LiveData<String> = Transformations.map(_worker_2){it.email ?: ""}
+    fun setWorker2(worker_2:WorkerReference){
+        _worker_2.value = worker_2
+    }
+    private val _worker_3 = MutableLiveData<WorkerReference>()
+    val worker_3:LiveData<String> = Transformations.map(_worker_3){it.email ?: ""}
+    fun setWorker3(worker_3:WorkerReference){
+        _worker_3.value = worker_3
+    }
     private val _descriptionError = MediatorLiveData<Int>()
     private fun setDescriptionError(){
         if(isDescriptionValid(description.value!!)){
@@ -43,8 +51,7 @@ class NewSubactivityViewModel : BaseViewModel() {
     }
     init {
         _workerError.addSource(worker_1) { setWorkerError() }
-        _workerError.addSource(worker_2) { setWorkerError() }
-        _workerError.addSource(worker_3) { setWorkerError() }
+
     }
 
     val workerError: LiveData<Int> = _workerError
@@ -70,6 +77,8 @@ class NewSubactivityViewModel : BaseViewModel() {
     init {
         _savable.addSource(workerError) { setSavable() }
     }
+
+    val savable = _savable
     private fun isDescriptionValid(description: String): Boolean{
         if (description.isEmpty()){return false}
         else {return true}
@@ -104,7 +113,7 @@ class NewSubactivityViewModel : BaseViewModel() {
         val subactivityParams = JSONObject()
         val user = (LoginRepository.user.value as Worker)
 
-        if(! description.value.isNullOrEmpty())
+        /*if(! description.value.isNullOrEmpty())
             subactivityParams.accumulate("description", description.value)
         if(! deliveryDate.value.isNullOrEmpty()) {
             subactivityParams.accumulate("delivery date", deliveryDate.value)
@@ -117,7 +126,7 @@ class NewSubactivityViewModel : BaseViewModel() {
         }
         if(!worker_3.value.isNullOrEmpty()) {
             subactivityParams.accumulate("worker_1", worker_3.value)
-        }
+        }*/
         return subactivityParams
     }
 }

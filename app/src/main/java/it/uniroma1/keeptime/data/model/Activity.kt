@@ -15,6 +15,7 @@ import java.util.*
 open class Activity(
     deliveryTime: Date,
     description: String,
+    val master: Boolean,
     status: String,
     url: Uri,
     val project: ProjectReference,
@@ -26,6 +27,7 @@ open class Activity(
         override val descriptor: SerialDescriptor = SerialDescriptor("Activity") {
             element("deliveryTime", DateSerializer.descriptor)
             element<String>("description")
+            element<Boolean>("master")
             element<String>("status")
             element("url", UriSerializer.descriptor)
             element<ProjectReference>("project")
@@ -36,17 +38,18 @@ open class Activity(
             val compositeOutput = encoder.beginStructure(descriptor)
             compositeOutput.encodeSerializableElement(descriptor, 0, DateSerializer, value.deliveryTime)
             compositeOutput.encodeStringElement(descriptor, 1, value.description)
-            compositeOutput.encodeStringElement(descriptor, 2, value.status)
-            compositeOutput.encodeSerializableElement(descriptor, 3, UriSerializer, value.url)
+            compositeOutput.encodeBooleanElement(descriptor, 2, value.master)
+            compositeOutput.encodeStringElement(descriptor, 3, value.status)
+            compositeOutput.encodeSerializableElement(descriptor, 4, UriSerializer, value.url)
             compositeOutput.encodeSerializableElement(
                 descriptor,
-                4,
+                5,
                 ProjectReference.serializer(),
                 value.project
             )
             compositeOutput.encodeSerializableElement(
                 descriptor,
-                5,
+                6,
                 ListSerializer(SubactivityReference.serializer()),
                 value.subactivities
             )
@@ -57,6 +60,7 @@ open class Activity(
             val dec: CompositeDecoder = decoder.beginStructure(descriptor)
             var deliveryTime: Date? = null
             var description: String? = null
+            var master: Boolean? = null
             var status: String? = null
             var url: Uri? = null
             var project: ProjectReference? = null
@@ -66,14 +70,15 @@ open class Activity(
                     CompositeDecoder.READ_DONE -> break@loop
                     0 -> deliveryTime = dec.decodeSerializableElement(descriptor, 0, DateSerializer)
                     1 -> description = dec.decodeStringElement(descriptor, 1)
-                    2 -> status = dec.decodeStringElement(descriptor, 2)
-                    3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)
-                    4 -> project = dec.decodeSerializableElement(
-                            descriptor, 4, ProjectReference.serializer()
+                    2 -> master = dec.decodeBooleanElement(descriptor, 2)
+                    3 -> status = dec.decodeStringElement(descriptor, 3)
+                    4 -> url = dec.decodeSerializableElement(descriptor, 4, UriSerializer)
+                    5 -> project = dec.decodeSerializableElement(
+                            descriptor, 5, ProjectReference.serializer()
                     )
-                    5 -> subactivities = dec.decodeSerializableElement(
+                    6 -> subactivities = dec.decodeSerializableElement(
                         descriptor,
-                        5,
+                        6,
                         ListSerializer(SubactivityReference.serializer())
                     )
                     else -> throw SerializationException("Unknown index $i")
@@ -83,6 +88,7 @@ open class Activity(
             return Activity(
                 deliveryTime ?: throw MissingFieldException("deliveryTime"),
                 description ?: throw MissingFieldException("description"),
+                master ?: throw MissingFieldException("master"),
                 status ?: throw MissingFieldException("status"),
                 url ?: throw MissingFieldException("url"),
                 project ?: throw MissingFieldException("project"),

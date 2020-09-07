@@ -83,9 +83,8 @@ class ActivityFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.new_subactivty_button.setOnClickListener(::onNewSubactivityClicked)
-        var visible = true
-        view.findViewById<FloatingActionButton>(R.id.new_subactivty_button).visibility = if(visible) View.VISIBLE else View.GONE
+        view.new_subactivity_button.setOnClickListener(::onNewSubactivityClicked)
+
         subactivitiesRecycler.apply {
             adapter = subactivitiesAdapter
             layoutManager = subactivitiesLayoutManager
@@ -98,6 +97,8 @@ class ActivityFragment : BaseFragment() {
 
         activityViewModel.activity.observe(viewLifecycleOwner, Observer {
             if(it !is Activity) return@Observer
+
+            view.new_subactivity_button.visibility = if(it.master) View.VISIBLE else View.GONE
 
             subactivitiesAdapter.replace(it.subactivities)
             subactivitiesSwipe.isRefreshing = false

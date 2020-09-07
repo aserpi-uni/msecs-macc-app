@@ -66,8 +66,8 @@ open class Activity(
                     CompositeDecoder.READ_DONE -> break@loop
                     0 -> deliveryTime = dec.decodeSerializableElement(descriptor, 0, DateSerializer)
                     1 -> description = dec.decodeStringElement(descriptor, 1)
-                    2 -> status = dec.decodeStringElement(descriptor, 3)
-                    3 -> url = dec.decodeSerializableElement(descriptor, 4, UriSerializer)
+                    2 -> status = dec.decodeStringElement(descriptor, 2)
+                    3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)
                     4 -> project = dec.decodeSerializableElement(
                             descriptor, 4, ProjectReference.serializer()
                     )

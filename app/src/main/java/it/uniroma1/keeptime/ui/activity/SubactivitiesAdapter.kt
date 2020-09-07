@@ -2,12 +2,14 @@ package it.uniroma1.keeptime.ui.activity
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.model.SubactivityReference
+import it.uniroma1.keeptime.ui.statusColor
 
 // TODO: use Material's one-line list when it will become public
 class SubactivitiesAdapter(subactivities_: List<SubactivityReference>, private val onClick: (SubactivityReference) -> Any) :
@@ -36,12 +38,11 @@ class SubactivitiesAdapter(subactivities_: List<SubactivityReference>, private v
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: SubactivityViewHolder, position: Int) {
         val subactivity = subactivities[position]
-        (holder.constraintLayout.getViewById(R.id.activitiesListItemText) as MaterialTextView).text = subactivity.description
 
-        holder.constraintLayout.setOnClickListener {
-            onClick(subactivity)
-        }
+        (holder.constraintLayout.getViewById(R.id.subactivitiesListItemText) as MaterialTextView).text = subactivity.description
+        holder.constraintLayout.setOnClickListener { onClick(subactivity) }
 
+        (holder.constraintLayout.getViewById(R.id.subactivitiesStatus) as ImageView).setColorFilter(statusColor(subactivity.status, subactivity.deliveryTime))
     }
 
     // Return the size of your dataset (invoked by the layout manager)

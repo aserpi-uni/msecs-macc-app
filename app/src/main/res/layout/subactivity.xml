@@ -12,12 +12,12 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/subactivitiesConstraint"
+        android:id="@+id/workingschedulesConstraint"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/subactivitiesSwipe"
+            android:id="@+id/workingschedulesSwipe"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
@@ -31,7 +31,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/subactivitiesRecycler"
+                android:id="@+id/workingschedulesRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

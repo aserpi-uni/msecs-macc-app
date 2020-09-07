@@ -101,7 +101,8 @@
                 android:layout_height="wrap_content"
                 android:autofillHints="@string/prompt_worker_1"
                 android:hint="@string/prompt_worker_1"
-                android:inputType="textEmailAddress"
+                android:focusable="false"
+                android:inputType="none|textMultiLine|textNoSuggestions"
                 android:text="@{viewModel.worker_1}" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -125,7 +126,8 @@
                 android:layout_height="wrap_content"
                 android:autofillHints="@string/prompt_worker_2"
                 android:hint="@string/prompt_worker_2"
-                android:inputType="textEmailAddress"
+                android:focusable="false"
+                android:inputType="none|textMultiLine|textNoSuggestions"
                 android:text="@{viewModel.worker_2}" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -148,25 +150,38 @@
                 android:layout_height="wrap_content"
                 android:autofillHints="@string/prompt_worker_3"
                 android:hint="@string/prompt_worker_3"
-                android:inputType="textEmailAddress"
+                android:focusable="false"
+                android:inputType="none|textMultiLine|textNoSuggestions"
                 android:text="@{viewModel.worker_3}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-
-        <Button
-            android:id="@+id/button_save"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_finished"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:enabled="@{viewModel.savable}"
-            android:onClick="@{viewModel::createSubactivity}"
-            android:text="@string/save"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/worker_3" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/worker_3"
+            android:checked="@={viewModel.finished}"
+            android:text="@string/finished"/>
+
+
+            <Button
+                android:id="@+id/button_save"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:enabled="@{viewModel.savable}"
+                android:onClick="@{viewModel::createSubactivity}"
+                android:text="@string/save"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/switch_finished"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,5 +1,4 @@
 package it.uniroma1.keeptime.ui.forms
-import android.service.voice.AlwaysOnHotwordDetector
 import android.view.View
 import androidx.lifecycle.*
 import com.android.volley.*
@@ -8,23 +7,26 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 import it.uniroma1.keeptime.R
+import it.uniroma1.keeptime.data.AuthenticatedJsonArrayRequest
 import it.uniroma1.keeptime.data.AuthenticatedJsonObjectRequest
 import it.uniroma1.keeptime.data.DateSerializer
-import it.uniroma1.keeptime.data.LoginRepository
-import it.uniroma1.keeptime.data.model.Worker
 import it.uniroma1.keeptime.data.model.WorkerReference
 import it.uniroma1.keeptime.ui.base.BaseViewModel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import java.lang.reflect.GenericArrayType
 import java.util.*
 import kotlin.coroutines.resumeWithException
 
 class NewSubactivityViewModel : BaseViewModel() {
     private val _workers = MutableLiveData<List<WorkerReference>>()
     val workers : LiveData<List<WorkerReference>> = _workers
+
     val description = MutableLiveData<String>()
+    val descriptionError: LiveData<Int> = Transformations.map(description) {
+        if(it.isEmpty()) R.string.invalid_description else null
+    }
+
     val _deliveryDate = MutableLiveData<Date>()
     val deliveryDate = Transformations.map(_deliveryDate) {it.toString()}
     private val _worker_1 = MutableLiveData<WorkerReference>()
@@ -42,16 +44,6 @@ class NewSubactivityViewModel : BaseViewModel() {
     fun setWorker3(worker_3:WorkerReference){
         _worker_3.value = worker_3
     }
-    private val _descriptionError = MediatorLiveData<Int>()
-    private fun setDescriptionError(){
-        if(isDescriptionValid(description.value!!)){
-            _descriptionError.value =  null}
-
-    }
-    init{
-        _descriptionError.addSource(description) {setDescriptionError()}
-    }
-    val descriptionError: LiveData<Int> = _descriptionError
 
     private val _workerError = MediatorLiveData<Int>()
     private fun setWorkerError() {
@@ -63,6 +55,8 @@ class NewSubactivityViewModel : BaseViewModel() {
     }
     init {
         _workerError.addSource(worker_1) { setWorkerError() }
+        _workerError.addSource(worker_2) { setWorkerError() }
+        _workerError.addSource(worker_3) { setWorkerError() }
 
     }
 
@@ -79,11 +73,11 @@ class NewSubactivityViewModel : BaseViewModel() {
     }
     val deliveryDateError: LiveData<Int> = _deliveryDateError
 
+    val finished = MutableLiveData<Boolean>(false)
 
     private val _savable = MediatorLiveData<Boolean>()
     private fun setSavable() {
-        _savable.value =
-            workerError == null && descriptionError == null
+        _savable.value = workerError.value == null && descriptionError.value == null
     }
 
     init {
@@ -91,10 +85,7 @@ class NewSubactivityViewModel : BaseViewModel() {
     }
 
     val savable = _savable
-    private fun isDescriptionValid(description: String): Boolean{
-        if (description.isEmpty()){return false}
-        else {return true}
-    }
+    private fun isDescriptionValid(description: String) = ! description.isEmpty()
 
     var baseUrl: String = ""
 
@@ -108,7 +99,7 @@ class NewSubactivityViewModel : BaseViewModel() {
     fun createSubactivity(view: View) {
         val subactivityParams = subactivityParams()
         _busy.value = true
-        val url = baseUrl.dropLast(5) + "/subactivities/new.json"
+        val url = baseUrl.dropLast(5) + "/subactivities.json"
 
         viewModelScope.launch {
             try {
@@ -127,11 +118,11 @@ class NewSubactivityViewModel : BaseViewModel() {
     private fun subactivityParams(): JSONObject {
         val subactivityParams = JSONObject()
         subactivityParams.accumulate("description", description.value)
-        subactivityParams.accumulate("delivery_date", Json.stringify<Date>(DateSerializer, _deliveryDate.value!!))
-        subactivityParams.accumulate("worker_1", _worker_1.value!!.url)
-        subactivityParams.accumulate("worker_2", _worker_2.value!!.url)
-        subactivityParams.accumulate("worker_3", _worker_3.value!!.url)
-        subactivityParams.accumulate("status", "undefined")
+        subactivityParams.accumulate("delivery_time", Json.stringify<Date>(DateSerializer, _deliveryDate.value!!))
+        subactivityParams.accumulate("worker_1_id", _worker_1.value!!.url)
+        subactivityParams.accumulate("worker_2_id", _worker_2.value!!.url)
+        subactivityParams.accumulate("worker_3_id", _worker_3.value!!.url)
+        subactivityParams.accumulate("status", if(finished.value!!) "finished" else "ongoing")
 
         val new = JSONObject()
         new.accumulate("subactivity", subactivityParams)
@@ -152,7 +143,7 @@ class NewSubactivityViewModel : BaseViewModel() {
 
     //function to invoke the get_worker_ids method from the server
     private suspend fun getWorkers(url:String):List<WorkerReference> = suspendCancellableCoroutine{ cont ->
-        val request = AuthenticatedJsonObjectRequest(
+        val request = AuthenticatedJsonArrayRequest(
             Request.Method.GET, url,null,
             Response.Listener {
                 cont.resume(Json.parse(ListSerializer(WorkerReference.serializer()), it.toString())) { }
@@ -163,6 +154,7 @@ class NewSubactivityViewModel : BaseViewModel() {
        KeepTime.instance.requestQueue.add(request)
         cont.invokeOnCancellation { request.cancel() }
     }
+
     private suspend fun newSubactivity(url:String, payload: JSONObject):Unit = suspendCancellableCoroutine{ cont ->
         val request = AuthenticatedJsonObjectRequest(
             Request.Method.POST, url, payload,

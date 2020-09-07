@@ -121,7 +121,7 @@ class ActivityFragment : BaseFragment() {
     }
     private fun onNewSubactivityClicked(view: View){
         val action = ActivityFragmentDirections.actionToNewSubactivity(
-            args.workspaceUrl
+            activityViewModel.activity.value!!.url.toString(), args.workspaceUrl
         )
         findNavController().navigate(action)
     }

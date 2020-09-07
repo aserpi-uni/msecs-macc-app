@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.subactivity.*
 import kotlinx.serialization.json.Json
 
@@ -18,6 +19,7 @@ import it.uniroma1.keeptime.data.model.WorkingscheduleReference
 import it.uniroma1.keeptime.databinding.SubactivityBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
 import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
+import kotlinx.android.synthetic.main.subactivity.view.*
 
 
 class SubactivityFragment : BaseFragment() {
@@ -50,6 +52,20 @@ class SubactivityFragment : BaseFragment() {
             subactivityViewModel.refreshSubactivity(subactivityReference)
             true
         }
+
+        val finishItem = menu.findItem(R.id.action_finish)
+        subactivityViewModel.activity.observe(viewLifecycleOwner, Observer {
+            val subactivity = it ?: return@Observer
+            if(subactivity.status == "finished") {
+                finishItem.isVisible = false
+            } else {
+                finishItem.isVisible = true
+                finishItem.setOnMenuItemClickListener {
+                    subactivityViewModel.finish(subactivityReference)
+                    true
+                }
+            }
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -94,12 +110,12 @@ class SubactivityFragment : BaseFragment() {
             if(it !is Subactivity) return@Observer
 
             workingschedulesAdapter.replace(it.workingschedules)
-            workingschedulesSwipe.isRefreshing = false
+            view.workingschedulesSwipe.isRefreshing = false
         })
 
         subactivityViewModel.message.observe(viewLifecycleOwner, Observer {
             val message = it ?: return@Observer
-            workingschedulesSwipe.isRefreshing = false
+            view.workingschedulesSwipe.isRefreshing = false
         })
 
         subactivityViewModel.refreshSubactivity(subactivityReference)

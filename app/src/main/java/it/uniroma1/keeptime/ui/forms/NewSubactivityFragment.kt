@@ -22,6 +22,7 @@ import it.uniroma1.keeptime.databinding.NewSubactivityBinding
 import it.uniroma1.keeptime.ui.activity.ActivityFragmentArgs
 import it.uniroma1.keeptime.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.new_subactivity.view.*
+import kotlinx.android.synthetic.main.user_preferences_fragment.view.*
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.json.Json
 import java.util.*
@@ -43,6 +44,7 @@ class NewSubactivityFragment : BaseFragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         newSubactivityViewModel = ViewModelProvider(this).get(NewSubactivityViewModel::class.java)
         viewModel = newSubactivityViewModel
+        newSubactivityViewModel.baseUrl = args.activityUrl
 
         val binding = DataBindingUtil.inflate<NewSubactivityBinding>(
             inflater,
@@ -63,56 +65,60 @@ class NewSubactivityFragment : BaseFragment(){
         var date:Date
 
 
-        date_button.setOnClickListener({
+        date_button.setOnClickListener {
             val builder = MaterialDatePicker.Builder.datePicker()
             val today = MaterialDatePicker.todayInUtcMilliseconds()
             builder.setSelection(today)
             val picker = builder.build()
-            picker.addOnPositiveButtonClickListener {selection ->
+            picker.addOnPositiveButtonClickListener { selection ->
                 date = Date(selection)
                 date_text.text = Json.stringify(DateSerializer, date)
                 newSubactivityViewModel._deliveryDate.value = date
             }
             picker.show(childFragmentManager, picker.toString())
-        })
+        }
 
         val url = args.workspaceUrl.dropLast(5) + "/show_worker_ids.json"
 
         newSubactivityViewModel.workers.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if(it !is List<WorkerReference>) return@Observer
-            var allWorkers = newSubactivityViewModel.workers.value!!
-            var selectedIdx = 0
-            view.prompt_worker_1.setOnClickListener{
+            val allWorkers = it
+
+            var selectedIdx_1 = 0
+            view.prompt_worker_1.setOnClickListener {
                 MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.select_worker_1)
-                    .setSingleChoiceItems(allWorkers.map{it.email}.toTypedArray(), selectedIdx){
-                        _, idx -> selectedIdx = idx
+                    .setSingleChoiceItems(allWorkers.map { it.email }.toTypedArray(), selectedIdx_1) { _, idx ->
+                        selectedIdx_1 = idx
                     }
-                    .setPositiveButton(R.string.save){_, _ -> newSubactivityViewModel.setWorker1(allWorkers[selectedIdx])}
+                    .setPositiveButton(R.string.save) { _, _ -> newSubactivityViewModel.setWorker1(allWorkers[selectedIdx_1]) }
                     .setNegativeButton(R.string.cancel, null).show()
             }
+            
+            var selectedIdx_2 = 0
             view.prompt_worker_2.setOnClickListener{
                 MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.select_worker_2)
-                    .setSingleChoiceItems(allWorkers.map{it.email}.toTypedArray(), selectedIdx){
-                            _, idx -> selectedIdx = idx
+                    .setSingleChoiceItems(allWorkers.map{it.email}.toTypedArray(), selectedIdx_2){
+                            _, idx -> selectedIdx_2 = idx
                     }
-                    .setPositiveButton(R.string.save){_, _ -> newSubactivityViewModel.setWorker2(allWorkers[selectedIdx])}
+                    .setPositiveButton(R.string.save){_, _ -> newSubactivityViewModel.setWorker2(allWorkers[selectedIdx_2])}
                     .setNegativeButton(R.string.cancel, null).show()
             }
+            
+            var selectedIdx_3 = 0
             view.prompt_worker_3.setOnClickListener{
                 MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.select_worker_3)
-                    .setSingleChoiceItems(allWorkers.map{it.email}.toTypedArray(), selectedIdx){
-                            _, idx -> selectedIdx = idx
+                    .setSingleChoiceItems(allWorkers.map{it.email}.toTypedArray(), selectedIdx_3){
+                            _, idx -> selectedIdx_3 = idx
                     }
-                    .setPositiveButton(R.string.save){_, _ -> newSubactivityViewModel.setWorker3(allWorkers[selectedIdx])}
+                    .setPositiveButton(R.string.save){_, _ -> newSubactivityViewModel.setWorker3(allWorkers[selectedIdx_3])}
                     .setNegativeButton(R.string.cancel, null).show()
             }
         })
 
         newSubactivityViewModel.getWorkerIds(url)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {

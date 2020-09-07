@@ -54,7 +54,7 @@
     <string name="success_update">Resource successfully updated</string>
     <string name="user_preference_summary">Tap to open user settings</string>
     <string name="title_activity_workspace">Workspace</string>
-    <string name="invalid_worker">The chosen worker is not valid</string>
+    <string name="invalid_worker">The workers must be different</string>
     <string name="select_worker_1">Select first member</string>
     <string name="select_worker_2">Select second member</string>
     <string name="select_worker_3">Select third member</string>
@@ -68,6 +68,9 @@
     <string name="new_subactivity">Add new subactivity</string>
     <string name="success_create">Resource created successfully </string>
     <string name="failed_create"> Resource not created</string>
+    <string name="invalid_description">Description cannot be empty</string>
+    <string name="finished">Finished</string>
+    <string name="finish">Finish</string>
 
     <!-- Project -->
     <string name="project_commission">This project is followed by <font fgcolor="#FF0000">%1$s</font> for %2$s.</string>

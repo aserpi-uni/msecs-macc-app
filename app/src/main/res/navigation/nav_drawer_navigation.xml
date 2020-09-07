@@ -118,11 +118,12 @@
     <fragment
         android:id="@+id/newSubactivityFragment"
         android:name="it.uniroma1.keeptime.ui.forms.NewSubactivityFragment"
-        android:label="new_subactivity"
+        android:label="@string/new_subactivity"
         tools:layout="@layout/new_subactivity">
         <argument
-            android:name="workspaceUrl"
-            app:argType="string" />
+            android:name="activityUrl"
+            app:argType="string"/>
+        <argument android:name="workspaceUrl" app:argType="string"/>
     </fragment>
     <fragment
         android:id="@+id/newWorkingScheduleFragment"

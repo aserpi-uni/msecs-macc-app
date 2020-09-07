@@ -21,14 +21,19 @@ class NewSubactivityViewModel : BaseViewModel() {
     val worker_1 = MutableLiveData<WorkerReference>()
     val worker_2 = MutableLiveData<WorkerReference>()
     val worker_3 = MutableLiveData<WorkerReference>()
-    private val _workerError = MediatorLiveData<Int>()
 
-    val _descriptionError = MediatorLiveData<Int>()
+    private val _descriptionError = MediatorLiveData<Int>()
     private fun setDescriptionError(){
         if(isDescriptionValid(description.value!!)){
             _descriptionError.value =  null}
 
     }
+    init{
+        _descriptionError.addSource(description) {setDescriptionError()}
+    }
+    val descriptionError: LiveData<Int> = _descriptionError
+
+    private val _workerError = MediatorLiveData<Int>()
     private fun setWorkerError() {
         if (worker_1.value == worker_2.value || worker_1.value == worker_3.value || worker_2.value == worker_3.value) {
             _workerError.value = R.string.invalid_worker
@@ -44,14 +49,22 @@ class NewSubactivityViewModel : BaseViewModel() {
 
     val workerError: LiveData<Int> = _workerError
 
-    private val _dateError = MediatorLiveData<Int>()
-    private fun setDateError() {
-
+    private val _deliveryDateError = MediatorLiveData<Int>()
+    private fun setDeliveryDateError() {
+        if (deliveryDate == null){
+            _deliveryDateError.value = R.string.invalid_date
+        }
     }
+    init{
+        _deliveryDateError.addSource(deliveryDate) {setDeliveryDateError()}
+    }
+    val deliveryDateError: LiveData<Int> = _deliveryDateError
+
 
     private val _savable = MediatorLiveData<Boolean>()
     private fun setSavable() {
-        _savable.value = workerError == null
+        _savable.value =
+            workerError == null && descriptionError == null
     }
 
     init {
@@ -67,5 +80,44 @@ class NewSubactivityViewModel : BaseViewModel() {
     }
     private fun isDateValid(date: Date): Boolean{
         return date != null
+    }
+
+    fun createSubactivity(view: View) {
+        val userParams = subactivityParams()
+        _busy.value = true
+
+        viewModelScope.launch {
+            try {
+                LoginRepository.updateUser(userParams)
+                _message.value = R.string.success_update
+            } catch (_: AuthFailureError) {
+                _logoutMessage.value = R.string.failed_wrong_credentials
+            } catch (error: VolleyError) {
+                _message.value = volleyErrorMessage(error)
+            } finally {
+                _busy.value = false
+            }
+        }
+    }
+
+    private fun subactivityParams(): JSONObject {
+        val subactivityParams = JSONObject()
+        val user = (LoginRepository.user.value as Worker)
+
+        if(! description.value.isNullOrEmpty())
+            subactivityParams.accumulate("description", description.value)
+        if(! deliveryDate.value.isNullOrEmpty()) {
+            subactivityParams.accumulate("delivery date", deliveryDate.value)
+        }
+        if(!worker_1.value.isNullOrEmpty()) {
+            subactivityParams.accumulate("worker_1", worker_1.value)
+        }
+        if(!worker_2.value.isNullOrEmpty()) {
+            subactivityParams.accumulate("worker_1", worker_2.value)
+        }
+        if(!worker_3.value.isNullOrEmpty()) {
+            subactivityParams.accumulate("worker_1", worker_3.value)
+        }
+        return subactivityParams
     }
 }

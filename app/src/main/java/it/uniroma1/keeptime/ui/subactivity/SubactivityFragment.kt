@@ -23,10 +23,11 @@ import it.uniroma1.keeptime.ui.modals.ModalBottomSheet
 class SubactivityFragment : BaseFragment() {
     private val args: SubactivityFragmentArgs by navArgs()
     private lateinit var subactivityReference: SubactivityReference
+    private lateinit var subactivityViewModel: SubactivityViewModel
 
     private lateinit var workingschedulesAdapter: WorkingschedulesAdapter
     private lateinit var workingschedulesLayoutManager: LinearLayoutManager
-    private lateinit var subactivityViewModel: SubactivityViewModel
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 

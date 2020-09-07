@@ -106,10 +106,10 @@ class ActivityFragment : BaseFragment() {
         activityViewModel.refreshActivity(activityReference)
     }
 
-    private fun onSubactivityClicked(Subactivity: SubactivityReference) {
+    private fun onSubactivityClicked(subactivity: SubactivityReference) {
 
         val action = ActivityFragmentDirections.actionToSubactivity(
-            Subactivity.description, Json.stringify(SubactivityReference.serializer(), Subactivity)
+            subactivity.description, Json.stringify(SubactivityReference.serializer(), subactivity)
         )
         findNavController().navigate(action)
 

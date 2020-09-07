@@ -55,6 +55,12 @@
     <string name="user_preference_summary">Tap to open user settings</string>
     <string name="title_activity_workspace">Workspace</string>
     <string name="invalid_worker">The chosen worker is not valid</string>
+    <string name="invalid_date">The chosen date is not valid</string>
+    <string name="prompt_description">Insert description</string>
+    <string name="prompt_worker_1">Choose worker 1 </string>
+    <string name="prompt_worker_2">Choose worker 2 </string>
+    <string name="prompt_worker_3">Choose worker 3 </string>
+    <string name="prompt_hours">Add working hours</string>
 
     <!-- Project -->
     <string name="project_commission">This project is followed by <font fgcolor="#FF0000">%1$s</font> for %2$s.</string>

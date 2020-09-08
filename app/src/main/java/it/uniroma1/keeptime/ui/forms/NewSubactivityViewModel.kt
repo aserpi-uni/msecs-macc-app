@@ -16,6 +16,7 @@ import it.uniroma1.keeptime.ui.base.BaseViewModel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.coroutines.resumeWithException
 
@@ -29,7 +30,11 @@ class NewSubactivityViewModel : BaseViewModel() {
     }
 
     val _deliveryDate = MutableLiveData<Date>(Date(MaterialDatePicker.todayInUtcMilliseconds()))
-    val deliveryDate = Transformations.map(_deliveryDate) {it.toString()}
+    val deliveryDate = Transformations.map(_deliveryDate) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        sdf.format(it)
+    }
     private val _worker_1 = MutableLiveData<WorkerReference>()
     val worker_1:LiveData<String> = Transformations.map(_worker_1){it.email ?: ""}
     fun setWorker1(worker_1:WorkerReference){

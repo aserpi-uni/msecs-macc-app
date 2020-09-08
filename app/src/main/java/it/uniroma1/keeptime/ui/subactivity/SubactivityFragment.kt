@@ -56,7 +56,7 @@ class SubactivityFragment : BaseFragment() {
         val finishItem = menu.findItem(R.id.action_finish)
         subactivityViewModel.activity.observe(viewLifecycleOwner, Observer {
             val subactivity = it ?: return@Observer
-            if(subactivity.status == "finished") {
+            if(subactivity.status == "finished" || ! subactivity.master) {
                 finishItem.isVisible = false
             } else {
                 finishItem.isVisible = true

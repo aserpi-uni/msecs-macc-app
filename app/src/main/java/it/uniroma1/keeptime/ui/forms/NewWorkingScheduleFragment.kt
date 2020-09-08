@@ -2,17 +2,18 @@ package it.uniroma1.keeptime.ui.forms
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.textview.MaterialTextView
 
 import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.DateSerializer
 import it.uniroma1.keeptime.databinding.NewWorkingscheduleFragmentBinding
 
 import it.uniroma1.keeptime.ui.base.BaseFragment
+import kotlinx.android.synthetic.main.new_workingschedule_fragment.*
 import kotlinx.serialization.json.Json
 import java.util.*
 
@@ -48,16 +49,14 @@ class NewWorkingScheduleFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         //var date_text = view.findViewById(R.id.viewDate) as TextView
         newWorkingScheduleViewModel._subactivityUrl.value = args.subactivityUrl
-        var prompt_date  = view.findViewById(R.id.prompt_working_date) as Button
         var date: Date
-        prompt_date.setOnClickListener {
+        prompt_working_date.setOnClickListener {
             val builder = MaterialDatePicker.Builder.datePicker()
             val today = MaterialDatePicker.todayInUtcMilliseconds()
             builder.setSelection(today)
             val picker = builder.build()
             picker.addOnPositiveButtonClickListener { selection ->
                 date = Date(selection)
-                prompt_date.text = Json.stringify(DateSerializer, date)
                 newWorkingScheduleViewModel._date.value = date
             }
             picker.show(childFragmentManager, picker.toString())

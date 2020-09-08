@@ -47,6 +47,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autofillHints="@string/prompt_working_date"
+                    android:focusable="false"
                     android:hint="@string/prompt_working_date"
                     android:inputType="date"
                     android:text="@{viewModel.date}" />

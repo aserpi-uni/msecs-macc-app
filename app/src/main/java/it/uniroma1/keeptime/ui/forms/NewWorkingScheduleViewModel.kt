@@ -17,6 +17,7 @@ import it.uniroma1.keeptime.data.model.Worker
 import it.uniroma1.keeptime.ui.base.BaseViewModel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.json.Json
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.coroutines.resumeWithException
 
@@ -24,7 +25,11 @@ class NewWorkingScheduleViewModel : BaseViewModel() {
     val _subactivityUrl = MutableLiveData<String>()
     val subactivityUrl:LiveData<String> = _subactivityUrl
     val _date = MutableLiveData<Date>()
-    val date = Transformations.map(_date) {it.toString()}
+    val date = Transformations.map(_date) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        sdf.format(it)
+    }
     val _dateError = MediatorLiveData<Int>()
     private fun setDateError() {
         if(date.value == null) {
@@ -70,7 +75,7 @@ class NewWorkingScheduleViewModel : BaseViewModel() {
             _message.value =R.string.missing_inputs
             return
         }
-        val url = "/workingschedules.json"
+        val url = subactivityUrl.value!!.dropLast(5) + "/workingschedules.json"
         _busy.value = true
 
         viewModelScope.launch {
@@ -106,11 +111,5 @@ class NewWorkingScheduleViewModel : BaseViewModel() {
         )
         KeepTime.instance.requestQueue.add(request)
         cont.invokeOnCancellation{request.cancel()}
-    }
-
-    // TODO
-    private fun isHoursValid(hours: String): Boolean {
-        if(hours.isEmpty()) return true
-        return false
     }
 }

@@ -7,10 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 
 import it.uniroma1.keeptime.R
-import it.uniroma1.keeptime.data.model.WorkingscheduleReference
+import it.uniroma1.keeptime.data.model.Workingschedule
+import java.text.SimpleDateFormat
+import java.util.*
 
 // TODO: use Material's one-line list when it will become public
-class WorkingschedulesAdapter(workingschedules_: List<WorkingscheduleReference>, private val onClick: (WorkingscheduleReference) -> Any) :
+class WorkingschedulesAdapter(workingschedules_: List<Workingschedule>, private val onClick: (Workingschedule) -> Any) :
     RecyclerView.Adapter<WorkingschedulesAdapter.WorkingscheduleViewHolder>() {
 
     private val workingschedules = workingschedules_.toMutableList()
@@ -36,7 +38,11 @@ class WorkingschedulesAdapter(workingschedules_: List<WorkingscheduleReference>,
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: WorkingscheduleViewHolder, position: Int) {
         val workingschedule = workingschedules[position]
-        (holder.constraintLayout.getViewById(R.id.activitiesListItemText) as MaterialTextView).text = workingschedule.toString()
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        (holder.constraintLayout.getViewById(R.id.workingschedulesListItemDate) as MaterialTextView).text = sdf.format(workingschedule.date)
+        (holder.constraintLayout.getViewById(R.id.workingschedulesListItemHours) as MaterialTextView).text = workingschedule.hours.toString()
 
         holder.constraintLayout.setOnClickListener {
             onClick(workingschedule)
@@ -47,7 +53,7 @@ class WorkingschedulesAdapter(workingschedules_: List<WorkingscheduleReference>,
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = workingschedules.size
 
-    fun replace(subactivities_: List<WorkingscheduleReference>) {
+    fun replace(subactivities_: List<Workingschedule>) {
         workingschedules.clear()
         workingschedules.addAll(subactivities_)
         notifyDataSetChanged()

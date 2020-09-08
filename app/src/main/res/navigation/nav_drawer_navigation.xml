@@ -95,7 +95,7 @@
             android:id="@+id/actionToSubactivity"
             app:destination="@id/subactivityFragment" />
         <action
-            android:id="@+id/action_toNewSubactivity"
+            android:id="@+id/actionToNewSubactivity"
             app:destination="@id/newSubactivityFragment" />
         <argument
             android:name="workspaceUrl"
@@ -112,7 +112,7 @@
             android:name="subactivityJson"
             app:argType="string" />
         <action
-            android:id="@+id/action_toNewWorkingSchedule"
+            android:id="@+id/actionToNewWorkingSchedule"
             app:destination="@id/newWorkingScheduleFragment" />
     </fragment>
     <fragment
@@ -128,6 +128,10 @@
     <fragment
         android:id="@+id/newWorkingScheduleFragment"
         android:name="it.uniroma1.keeptime.ui.forms.NewWorkingScheduleFragment"
-        android:label="new_workingschedule_fragment"
-        tools:layout="@layout/new_workingschedule_fragment" />
+        android:label="@string/new_workingschedule"
+        tools:layout="@layout/new_workingschedule_fragment">
+        <argument
+            android:name="subactivityUrl"
+            app:argType="string" />
+    </fragment>
 </navigation>

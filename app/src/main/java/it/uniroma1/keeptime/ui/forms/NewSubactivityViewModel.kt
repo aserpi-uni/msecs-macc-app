@@ -64,7 +64,7 @@ class NewSubactivityViewModel : BaseViewModel() {
 
     private val _deliveryDateError = MediatorLiveData<Int>()
     private fun setDeliveryDateError() {
-        if (deliveryDate == null){
+        if (deliveryDate.value.isNullOrEmpty()){
             _deliveryDateError.value = R.string.invalid_date
         }
     }
@@ -88,13 +88,6 @@ class NewSubactivityViewModel : BaseViewModel() {
     private fun isDescriptionValid(description: String) = ! description.isEmpty()
 
     var baseUrl: String = ""
-
-    private fun isWorkerValid(worker: WorkerReference): Boolean {
-        return worker != null
-    }
-    private fun isDateValid(date: Date): Boolean{
-        return date != null
-    }
 
     fun createSubactivity(view: View) {
         val subactivityParams = subactivityParams()
@@ -154,7 +147,7 @@ class NewSubactivityViewModel : BaseViewModel() {
        KeepTime.instance.requestQueue.add(request)
         cont.invokeOnCancellation { request.cancel() }
     }
-
+    //function to invoke the create subactivity method from the server
     private suspend fun newSubactivity(url:String, payload: JSONObject):Unit = suspendCancellableCoroutine{ cont ->
         val request = AuthenticatedJsonObjectRequest(
             Request.Method.POST, url, payload,

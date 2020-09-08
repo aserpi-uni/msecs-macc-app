@@ -63,8 +63,6 @@ class NewSubactivityFragment : BaseFragment(){
         var date_text = view.findViewById(R.id.viewDate) as TextView
         var date_button  = view.findViewById(R.id.delivery_date_button) as Button
         var date:Date
-
-
         date_button.setOnClickListener {
             val builder = MaterialDatePicker.Builder.datePicker()
             val today = MaterialDatePicker.todayInUtcMilliseconds()

@@ -25,7 +25,7 @@ class WorkingschedulesAdapter(workingschedules_: List<WorkingscheduleReference>,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkingscheduleViewHolder {
         // create a new view
         val constraintView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.subactivity_list_item, parent, false) as ConstraintLayout
+            .inflate(R.layout.workingschedule_list_item, parent, false) as ConstraintLayout
 
         // set the view's size, margins, padding and layout parameters
         return WorkingscheduleViewHolder(

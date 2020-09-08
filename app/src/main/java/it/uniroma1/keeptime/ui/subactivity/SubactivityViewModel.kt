@@ -17,7 +17,7 @@ import kotlin.coroutines.resumeWithException
 
 class SubactivityViewModel() : BaseViewModel() {
     private val _subactivity = MutableLiveData<Subactivity>()
-    val activity: LiveData<Subactivity> = _subactivity
+    val subactivity: LiveData<Subactivity> = _subactivity
 
     fun refreshSubactivity(reference: SubactivityReference) = viewModelScope.launch {
         try {

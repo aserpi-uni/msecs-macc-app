@@ -42,20 +42,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
-
-                <Button
-                    android:id="@+id/working_date_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height= "wrap_content"
-                    android:text= "Add working date"
-                    />
-                <TextView
-                    android:id="@+id/viewDate"
-                    android:layout_width= "wrap_content"
-                    android:layout_height= "wrap_content"
-                    android:text="Choose a date"
-                    />
-
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/prompt_working_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/prompt_working_date"
+                    android:hint="@string/prompt_working_date"
+                    android:inputType="date"
+                    android:text="@{viewModel.date}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -92,6 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:enabled="@{viewModel.savable}"
+                android:onClick="@{viewModel.createWorkingSchedule}"
                 android:text="@string/save"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

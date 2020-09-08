@@ -5,10 +5,10 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.subactivity.*
 import kotlinx.serialization.json.Json
 
@@ -36,11 +36,11 @@ class SubactivityFragment : BaseFragment() {
         val infoItem = menu.findItem(R.id.action_info)
         infoItem.isVisible = true
         infoItem.setOnMenuItemClickListener {
-            if(subactivityViewModel.activity.value == null) return@setOnMenuItemClickListener true
+            if(subactivityViewModel.subactivity.value == null) return@setOnMenuItemClickListener true
             ModalBottomSheet(
-                subactivityViewModel.activity.value!!.description,
-                subactivityViewModel.activity.value!!.status,
-                subactivityViewModel.activity.value!!.deliveryTime
+                subactivityViewModel.subactivity.value!!.description,
+                subactivityViewModel.subactivity.value!!.status,
+                subactivityViewModel.subactivity.value!!.deliveryTime
             ).show(parentFragmentManager, "info")
             true
         }
@@ -54,7 +54,7 @@ class SubactivityFragment : BaseFragment() {
         }
 
         val finishItem = menu.findItem(R.id.action_finish)
-        subactivityViewModel.activity.observe(viewLifecycleOwner, Observer {
+        subactivityViewModel.subactivity.observe(viewLifecycleOwner, Observer {
             val subactivity = it ?: return@Observer
             if(subactivity.status == "finished") {
                 finishItem.isVisible = false
@@ -95,6 +95,7 @@ class SubactivityFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.new_workingschedule_button.setOnClickListener(::onNewWorkingscheduleClicked)
 
         workingschedulesRecycler.apply {
             adapter = workingschedulesAdapter
@@ -106,7 +107,7 @@ class SubactivityFragment : BaseFragment() {
             subactivityViewModel.refreshSubactivity(subactivityReference)
         }
 
-        subactivityViewModel.activity.observe(viewLifecycleOwner, Observer {
+        subactivityViewModel.subactivity.observe(viewLifecycleOwner, Observer {
             if(it !is Subactivity) return@Observer
 
             workingschedulesAdapter.replace(it.workingschedules)
@@ -128,5 +129,11 @@ class SubactivityFragment : BaseFragment() {
         )
         findNavController().navigate(action)
          */
+    }
+    private fun onNewWorkingscheduleClicked(view: View){
+        val action = SubactivityFragmentDirections.actionToNewWorkingSchedule(
+            subactivityViewModel.subactivity.value!!.url.toString()
+        )
+        findNavController().navigate(action)
     }
 }

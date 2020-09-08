@@ -36,6 +36,17 @@
                 android:layout_height="match_parent" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/new_workingschedule_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:visibility="gone"
+            android:contentDescription="@string/new_workingschedule"
+            android:src="@drawable/ic_baseline_add_circle_outline_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/workingschedulesSwipe"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

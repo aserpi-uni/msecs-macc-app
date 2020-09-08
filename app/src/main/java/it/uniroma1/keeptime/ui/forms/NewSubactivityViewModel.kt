@@ -2,6 +2,7 @@ package it.uniroma1.keeptime.ui.forms
 import android.view.View
 import androidx.lifecycle.*
 import com.android.volley.*
+import com.google.android.material.datepicker.MaterialDatePicker
 import it.uniroma1.keeptime.KeepTime
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -15,6 +16,7 @@ import it.uniroma1.keeptime.ui.base.BaseViewModel
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.coroutines.resumeWithException
 
@@ -27,8 +29,12 @@ class NewSubactivityViewModel : BaseViewModel() {
         if(it.isEmpty()) R.string.invalid_description else null
     }
 
-    val _deliveryDate = MutableLiveData<Date>()
-    val deliveryDate = Transformations.map(_deliveryDate) {it.toString()}
+    val _deliveryDate = MutableLiveData<Date>(Date(MaterialDatePicker.todayInUtcMilliseconds()))
+    val deliveryDate = Transformations.map(_deliveryDate) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        sdf.format(it)
+    }
     private val _worker_1 = MutableLiveData<WorkerReference>()
     val worker_1:LiveData<String> = Transformations.map(_worker_1){it.email ?: ""}
     fun setWorker1(worker_1:WorkerReference){
@@ -57,7 +63,6 @@ class NewSubactivityViewModel : BaseViewModel() {
         _workerError.addSource(worker_1) { setWorkerError() }
         _workerError.addSource(worker_2) { setWorkerError() }
         _workerError.addSource(worker_3) { setWorkerError() }
-
     }
 
     val workerError: LiveData<Int> = _workerError
@@ -82,10 +87,10 @@ class NewSubactivityViewModel : BaseViewModel() {
 
     init {
         _savable.addSource(workerError) { setSavable() }
+        _savable.addSource(deliveryDateError) { setSavable() }
     }
 
     val savable = _savable
-    private fun isDescriptionValid(description: String) = ! description.isEmpty()
 
     var baseUrl: String = ""
 

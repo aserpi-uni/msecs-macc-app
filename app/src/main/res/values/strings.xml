@@ -33,7 +33,7 @@
 
     <string name="menu_clients">Clients</string>
     <string name="menu_log">Log</string>
-    <string name="menu_personal_log">Personal log</string>
+    <string name="menu_personal_log">Home page</string>
     <string name="menu_preferences">Settings</string>
     <string name="menu_projects">Projects</string>
     <string name="menu_user_preferences">Profile settings</string>
@@ -74,6 +74,7 @@
     <string name="finish">Finish</string>
     <string name="missing_inputs">Missing inputs</string>
     <string name="prompt_working_date">Add working date</string>
+    <string name="prompt_delivery_date">Choose a delivery date</string>
 
     <!-- Project -->
     <string name="project_commission">This project is followed by <font fgcolor="#FF0000">%1$s</font> for %2$s.</string>

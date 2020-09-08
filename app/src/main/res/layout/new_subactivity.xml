@@ -55,7 +55,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/delivery_date"
+            android:id="@+id/subactivity_delivery_date"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,18 +67,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/description">
 
-            <Button
-                android:id="@+id/delivery_date_button"
-                android:layout_width="wrap_content"
-                android:layout_height= "wrap_content"
-                android:text= "Add delivery date"
-                />
-            <TextView
-                android:id="@+id/viewDate"
-                android:layout_width= "wrap_content"
-                android:layout_height= "wrap_content"
-                android:text="Choose a date"
-                />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/prompt_subactivity_delivery_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/prompt_delivery_date"
+                android:hint="@string/prompt_delivery_date"
+                android:focusable="false"
+                android:inputType="none|textMultiLine|textNoSuggestions"
+                android:text="@{viewModel.deliveryDate}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,7 +90,7 @@
             app:errorText="@{viewModel.workerError}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/delivery_date">
+            app:layout_constraintTop_toBottomOf="@+id/subactivity_delivery_date">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/prompt_worker_1"

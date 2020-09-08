@@ -22,7 +22,7 @@ open class Project(
     val activities: List<ActivityReference>,
     val client: ClientReference,
     val workspace: WorkspaceReference
-) : ProjectReference(projectName, url) {
+) : ProjectReference(null, projectName, url) {
 
     @Serializer(forClass = Project::class)
     companion object : INetwork<Project> {

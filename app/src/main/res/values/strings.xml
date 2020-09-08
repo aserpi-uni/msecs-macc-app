@@ -71,6 +71,7 @@
     <string name="invalid_description">Description cannot be empty</string>
     <string name="finished">Finished</string>
     <string name="finish">Finish</string>
+    <string name="prompt_delivery_date">Choose a delivery date</string>
 
     <!-- Project -->
     <string name="project_commission">This project is followed by <font fgcolor="#FF0000">%1$s</font> for %2$s.</string>

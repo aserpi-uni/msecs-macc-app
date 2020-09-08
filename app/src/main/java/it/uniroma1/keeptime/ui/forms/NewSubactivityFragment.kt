@@ -21,6 +21,7 @@ import it.uniroma1.keeptime.data.model.WorkerReference
 import it.uniroma1.keeptime.databinding.NewSubactivityBinding
 import it.uniroma1.keeptime.ui.activity.ActivityFragmentArgs
 import it.uniroma1.keeptime.ui.base.BaseFragment
+import kotlinx.android.synthetic.main.new_subactivity.*
 import kotlinx.android.synthetic.main.new_subactivity.view.*
 import kotlinx.android.synthetic.main.user_preferences_fragment.view.*
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -60,19 +61,15 @@ class NewSubactivityFragment : BaseFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var date_text = view.findViewById(R.id.viewDate) as TextView
-        var date_button  = view.findViewById(R.id.delivery_date_button) as Button
         var date:Date
 
-
-        date_button.setOnClickListener {
+        prompt_subactivity_delivery_date.setOnClickListener {
             val builder = MaterialDatePicker.Builder.datePicker()
             val today = MaterialDatePicker.todayInUtcMilliseconds()
             builder.setSelection(today)
             val picker = builder.build()
             picker.addOnPositiveButtonClickListener { selection ->
                 date = Date(selection)
-                date_text.text = Json.stringify(DateSerializer, date)
                 newSubactivityViewModel._deliveryDate.value = date
             }
             picker.show(childFragmentManager, picker.toString())

@@ -2,6 +2,7 @@ package it.uniroma1.keeptime.ui.forms
 import android.view.View
 import androidx.lifecycle.*
 import com.android.volley.*
+import com.google.android.material.datepicker.MaterialDatePicker
 import it.uniroma1.keeptime.KeepTime
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -27,7 +28,7 @@ class NewSubactivityViewModel : BaseViewModel() {
         if(it.isEmpty()) R.string.invalid_description else null
     }
 
-    val _deliveryDate = MutableLiveData<Date>()
+    val _deliveryDate = MutableLiveData<Date>(Date(MaterialDatePicker.todayInUtcMilliseconds()))
     val deliveryDate = Transformations.map(_deliveryDate) {it.toString()}
     private val _worker_1 = MutableLiveData<WorkerReference>()
     val worker_1:LiveData<String> = Transformations.map(_worker_1){it.email ?: ""}
@@ -57,14 +58,13 @@ class NewSubactivityViewModel : BaseViewModel() {
         _workerError.addSource(worker_1) { setWorkerError() }
         _workerError.addSource(worker_2) { setWorkerError() }
         _workerError.addSource(worker_3) { setWorkerError() }
-
     }
 
     val workerError: LiveData<Int> = _workerError
 
     private val _deliveryDateError = MediatorLiveData<Int>()
     private fun setDeliveryDateError() {
-        if (deliveryDate == null){
+        if (deliveryDate.value == null){
             _deliveryDateError.value = R.string.invalid_date
         }
     }
@@ -82,19 +82,12 @@ class NewSubactivityViewModel : BaseViewModel() {
 
     init {
         _savable.addSource(workerError) { setSavable() }
+        _savable.addSource(deliveryDateError) { setSavable() }
     }
 
     val savable = _savable
-    private fun isDescriptionValid(description: String) = ! description.isEmpty()
 
     var baseUrl: String = ""
-
-    private fun isWorkerValid(worker: WorkerReference): Boolean {
-        return worker != null
-    }
-    private fun isDateValid(date: Date): Boolean{
-        return date != null
-    }
 
     fun createSubactivity(view: View) {
         val subactivityParams = subactivityParams()

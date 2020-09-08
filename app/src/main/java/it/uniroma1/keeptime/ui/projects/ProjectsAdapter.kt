@@ -34,7 +34,10 @@ class ProjectsAdapter(projects_: List<ProjectReference>, private val onClick: (P
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: ProjectViewHolder, position: Int) {
         val project = projects[position]
-        (holder.constraintLayout.getViewById(R.id.projectsListItemText) as MaterialTextView).text = project.projectName
+        val textView = holder.constraintLayout.getViewById(R.id.projectsListItemText) as MaterialTextView
+
+        textView.text = project.projectName
+        if(project.color != null) textView.setTextColor(project.color)
 
         holder.constraintLayout.setOnClickListener {
             onClick(project)

@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/workspace_navigation"
-    app:startDestination="@id/nav_log">
+    app:startDestination="@id/nav_projects">
 
     <fragment
-        android:id="@+id/nav_log"
-        android:name="it.uniroma1.keeptime.ui.log.LogFragment" />
+        android:id="@+id/nav_clients"
+        android:name="it.uniroma1.keeptime.ui.clients.ClientsFragment"/>
     <fragment
         android:id="@+id/nav_workers"
         android:name="it.uniroma1.keeptime.ui.workers.WorkersFragment"

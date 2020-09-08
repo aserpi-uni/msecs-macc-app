@@ -4,15 +4,14 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_log"
-            android:icon="@drawable/ic_schedule_black_24dp"
-            android:title="@string/menu_log" />
-
-        <item
             android:id="@+id/nav_projects"
             android:icon="@drawable/ic_assignment_black_24dp"
             android:title="@string/menu_projects" />
 
+        <item
+            android:id="@+id/nav_clients"
+            android:icon="@drawable/ic_local_atm_black_24dp"
+            android:title="@string/menu_clients"/>
         <item
             android:id="@+id/nav_workers"
             android:icon="@drawable/ic_group_black_24dp"

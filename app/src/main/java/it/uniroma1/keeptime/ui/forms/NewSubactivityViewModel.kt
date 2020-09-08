@@ -24,9 +24,9 @@ class NewSubactivityViewModel : BaseViewModel() {
     private val _workers = MutableLiveData<List<WorkerReference>>()
     val workers : LiveData<List<WorkerReference>> = _workers
 
-    val description = MutableLiveData<String>()
+    val description = MutableLiveData<String>("")
     val descriptionError: LiveData<Int> = Transformations.map(description) {
-        if(it.isEmpty()) R.string.invalid_description else null
+        if(it.isNullOrBlank()) R.string.invalid_description else null
     }
 
     val _deliveryDate = MutableLiveData<Date>(Date(MaterialDatePicker.todayInUtcMilliseconds()))
@@ -53,7 +53,12 @@ class NewSubactivityViewModel : BaseViewModel() {
 
     private val _workerError = MediatorLiveData<Int>()
     private fun setWorkerError() {
-        if (worker_1.value == worker_2.value || worker_1.value == worker_3.value || worker_2.value == worker_3.value) {
+        if (worker_1.value == worker_2.value ||
+            worker_1.value == worker_3.value ||
+            worker_2.value == worker_3.value ||
+            worker_1.value.isNullOrBlank() ||
+            worker_2.value.isNullOrBlank() ||
+            worker_3.value.isNullOrBlank()) {
             _workerError.value = R.string.invalid_worker
         } else {
             _workerError.value = null
@@ -82,12 +87,15 @@ class NewSubactivityViewModel : BaseViewModel() {
 
     private val _savable = MediatorLiveData<Boolean>()
     private fun setSavable() {
-        _savable.value = workerError.value == null && descriptionError.value == null
+        _savable.value = workerError.value == null &&
+                descriptionError.value == null &&
+                deliveryDateError.value == null
     }
 
     init {
         _savable.addSource(workerError) { setSavable() }
         _savable.addSource(deliveryDateError) { setSavable() }
+        _savable.addSource(descriptionError) { setSavable() }
     }
 
     val savable = _savable

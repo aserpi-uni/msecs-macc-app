@@ -54,7 +54,7 @@
     <string name="success_update">Resource successfully updated</string>
     <string name="user_preference_summary">Tap to open user settings</string>
     <string name="title_activity_workspace">Workspace</string>
-    <string name="invalid_worker">The workers must be different</string>
+    <string name="invalid_worker">The three workers must be different</string>
     <string name="select_worker_1">Select first member</string>
     <string name="select_worker_2">Select second member</string>
     <string name="select_worker_3">Select third member</string>

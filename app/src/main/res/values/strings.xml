@@ -33,7 +33,7 @@
 
     <string name="menu_clients">Clients</string>
     <string name="menu_log">Log</string>
-    <string name="menu_personal_log">Personal log</string>
+    <string name="menu_personal_log">Home page</string>
     <string name="menu_preferences">Settings</string>
     <string name="menu_projects">Projects</string>
     <string name="menu_user_preferences">Profile settings</string>

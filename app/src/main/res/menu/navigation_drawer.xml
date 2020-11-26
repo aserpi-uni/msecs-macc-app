@@ -17,7 +17,7 @@
     <item
         android:id="@+id/action_info"
         android:icon="@drawable/ic_info_outline_black_24dp"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:title="@string/info"
         android:visible="false"
         app:showAsAction="ifRoom" />
@@ -27,6 +27,14 @@
         android:icon="@drawable/ic_refresh_black_24dp"
         android:orderInCategory="1"
         android:title="@string/refresh"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_finish"
+        android:icon="@drawable/ic_baseline_done_24"
+        android:orderInCategory="2"
+        android:title="@string/finish"
         android:visible="false"
         app:showAsAction="ifRoom" />
 </menu>

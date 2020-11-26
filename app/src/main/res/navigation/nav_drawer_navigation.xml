@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_drawer_navigation"
-    app:startDestination="@id/nav_log">
+    app:startDestination="@id/nav_home">
 
     <fragment
         android:id="@+id/nav_workspaces"
@@ -16,16 +16,20 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_log"
+        android:id="@+id/nav_home"
         android:name="it.uniroma1.keeptime.ui.log.LogFragment"
         android:label="@string/menu_personal_log"
-        tools:layout="@layout/log" />
+        tools:layout="@layout/log"/>
 
     <fragment
         android:id="@+id/nav_projects"
         android:name="it.uniroma1.keeptime.ui.projects.ProjectsFragment"
         android:label="@string/menu_projects"
-        tools:layout="@layout/projects" />
+        tools:layout="@layout/projects" >
+        <action
+            android:id="@+id/actionToProject"
+            app:destination="@id/projectFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_clients"
@@ -57,6 +61,77 @@
             app:argType="string" />
         <argument
             android:name="workspaceJson"
+            app:argType="string" />
+        <action
+            android:id="@+id/actionToProject"
+            app:destination="@id/projectFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/projectFragment"
+        android:name="it.uniroma1.keeptime.ui.project.ProjectFragment"
+        android:label="{projectName}">
+        <argument
+            android:name="projectName"
+            android:defaultValue="Project"
+            app:argType="string" />
+        <argument
+            android:name="projectJson"
+            app:argType="string" />
+        <action
+            android:id="@+id/actionToActivity"
+            app:destination="@id/activityFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/activityFragment"
+        android:name="it.uniroma1.keeptime.ui.activity.ActivityFragment"
+        android:label="{description}">
+        <argument
+            android:name="description"
+            app:argType="string" />
+        <argument
+            android:name="activityJson"
+            app:argType="string" />
+        <action
+            android:id="@+id/actionToSubactivity"
+            app:destination="@id/subactivityFragment" />
+        <action
+            android:id="@+id/actionToNewSubactivity"
+            app:destination="@id/newSubactivityFragment" />
+        <argument
+            android:name="workspaceUrl"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/subactivityFragment"
+        android:name="it.uniroma1.keeptime.ui.subactivity.SubactivityFragment"
+        android:label="{description}">
+        <argument
+            android:name="description"
+            app:argType="string" />
+        <argument
+            android:name="subactivityJson"
+            app:argType="string" />
+        <action
+            android:id="@+id/actionToNewWorkingSchedule"
+            app:destination="@id/newWorkingScheduleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newSubactivityFragment"
+        android:name="it.uniroma1.keeptime.ui.forms.NewSubactivityFragment"
+        android:label="@string/new_subactivity"
+        tools:layout="@layout/new_subactivity">
+        <argument
+            android:name="activityUrl"
+            app:argType="string"/>
+        <argument android:name="workspaceUrl" app:argType="string"/>
+    </fragment>
+    <fragment
+        android:id="@+id/newWorkingScheduleFragment"
+        android:name="it.uniroma1.keeptime.ui.forms.NewWorkingScheduleFragment"
+        android:label="@string/new_workingschedule"
+        tools:layout="@layout/new_workingschedule_fragment">
+        <argument
+            android:name="subactivityUrl"
             app:argType="string" />
     </fragment>
 </navigation>

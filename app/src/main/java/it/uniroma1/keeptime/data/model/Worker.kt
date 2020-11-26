@@ -18,6 +18,7 @@ open class Worker(
     email: String,
     url: Uri,
     val clients: List<ClientReference>,
+    val projects: List<ProjectReference>,
     val workspaces: List<WorkspaceReference>
 ) :
     WorkerReference(email, url) {
@@ -30,6 +31,7 @@ open class Worker(
             element<String>("email")
             element("url", UriSerializer.descriptor)
             element<List<ClientReference>>("clients")
+            element<List<ClientReference>>("projects")
             element<List<WorkspaceReference>>("workspaces")
         }
 
@@ -48,6 +50,12 @@ open class Worker(
             compositeOutput.encodeSerializableElement(
                 descriptor,
                 5,
+                ListSerializer(ProjectReference.serializer()),
+                value.projects
+            )
+            compositeOutput.encodeSerializableElement(
+                descriptor,
+                6,
                 ListSerializer(WorkspaceReference.serializer()),
                 value.workspaces
             )
@@ -61,6 +69,7 @@ open class Worker(
             var email: String? = null
             var url: Uri? = null
             var clients: List<ClientReference>? = null
+            var projects: List<ProjectReference>? = null
             var workspaces: List<WorkspaceReference>? = null
             loop@ while (true) {
                 when (val i = dec.decodeElementIndex(descriptor)) {
@@ -71,9 +80,11 @@ open class Worker(
                     3 -> url = dec.decodeSerializableElement(descriptor, 3, UriSerializer)
                     4 -> clients =
                         dec.decodeSerializableElement(descriptor, 4, ListSerializer(ClientReference.serializer()))
-                    5 -> workspaces =
+                    5 -> projects =
+                        dec.decodeSerializableElement(descriptor, 5, ListSerializer(ProjectReference.serializer()))
+                    6 -> workspaces =
                         dec.decodeSerializableElement(
-                            descriptor, 5, ListSerializer(WorkspaceReference.serializer())
+                            descriptor, 6, ListSerializer(WorkspaceReference.serializer())
                         )
                     else -> throw SerializationException("Unknown index $i")
                 }
@@ -85,6 +96,7 @@ open class Worker(
                 email ?: throw MissingFieldException("email"),
                 url ?: throw MissingFieldException("url"),
                 clients ?: throw MissingFieldException("clients"),
+                projects ?: throw MissingFieldException("projects"),
                 workspaces ?: throw MissingFieldException("workspaces")
             )
         }

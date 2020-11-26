@@ -15,11 +15,15 @@ import it.uniroma1.keeptime.R
 import it.uniroma1.keeptime.data.LoginRepository
 import it.uniroma1.keeptime.data.model.ClientReference
 import it.uniroma1.keeptime.data.model.Worker
+import it.uniroma1.keeptime.data.model.Workspace
+import it.uniroma1.keeptime.data.model.WorkspaceReference
 import it.uniroma1.keeptime.databinding.ClientsBinding
 import it.uniroma1.keeptime.ui.base.BaseFragment
+import it.uniroma1.keeptime.ui.workspace.WorkspaceFragment
 
 
 class ClientsFragment : BaseFragment() {
+    private var workspaceReference: WorkspaceReference? = null
 
     private lateinit var clientsViewModel: ClientsViewModel
     private lateinit var clientsAdapter: ClientsAdapter
@@ -40,6 +44,9 @@ class ClientsFragment : BaseFragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = clientsViewModel
 
+        workspaceReference = (parentFragment?.parentFragment as? WorkspaceFragment)?.workspaceReference
+        clientsViewModel.refreshClients(workspaceReference)
+
         return binding.root
     }
 
@@ -53,15 +60,24 @@ class ClientsFragment : BaseFragment() {
         }
 
         clientsSwipe.setOnRefreshListener {
-            clientsViewModel.refreshClients()
+            clientsViewModel.refreshClients(workspaceReference)
         }
 
-        LoginRepository.user.observe(viewLifecycleOwner, Observer {
-            if(it !is Worker) return@Observer
+        if (workspaceReference != null) {
+            clientsViewModel.workspace.observe(viewLifecycleOwner, Observer {
+                if(it !is Workspace) return@Observer
 
-            clientsAdapter.replace(it.clients)
-            clientsSwipe.isRefreshing = false
-        })
+                clientsAdapter.replace(it.clients)
+                clientsSwipe.isRefreshing = false
+            })
+        } else {
+            LoginRepository.user.observe(viewLifecycleOwner, Observer {
+                if(it !is Worker) return@Observer
+
+                clientsAdapter.replace(it.clients)
+                clientsSwipe.isRefreshing = false
+            })
+        }
 
         clientsViewModel.message.observe(viewLifecycleOwner, Observer {
             val message = it ?: return@Observer

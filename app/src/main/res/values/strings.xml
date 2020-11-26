@@ -12,6 +12,7 @@
     <string name="refresh">Refresh</string>
     <string name="required">Required</string>
     <string name="save">Save</string>
+    <string name="status">Status</string>
 
     <!-- Strings related to login -->
     <string name="action_sign_in">Sign in</string>
@@ -32,7 +33,7 @@
 
     <string name="menu_clients">Clients</string>
     <string name="menu_log">Log</string>
-    <string name="menu_personal_log">Personal log</string>
+    <string name="menu_personal_log">Home page</string>
     <string name="menu_preferences">Settings</string>
     <string name="menu_projects">Projects</string>
     <string name="menu_user_preferences">Profile settings</string>
@@ -53,4 +54,28 @@
     <string name="success_update">Resource successfully updated</string>
     <string name="user_preference_summary">Tap to open user settings</string>
     <string name="title_activity_workspace">Workspace</string>
+    <string name="invalid_worker">The three workers must be different</string>
+    <string name="select_worker_1">Select first member</string>
+    <string name="select_worker_2">Select second member</string>
+    <string name="select_worker_3">Select third member</string>
+    <string name="invalid_date">The chosen date is not valid</string>
+    <string name="prompt_description">Insert description</string>
+    <string name="prompt_worker_1">Choose worker 1 </string>
+    <string name="prompt_worker_2">Choose worker 2 </string>
+    <string name="prompt_worker_3">Choose worker 3 </string>
+    <string name="prompt_hours">Add working hours</string>
+    <string name="invalid_hours">The number of hours selected is not valid</string>
+    <string name="new_subactivity">Add new subactivity</string>
+    <string name="new_workingschedule">Add new working schedule</string>
+    <string name="success_create">Resource created successfully </string>
+    <string name="failed_create"> Resource not created</string>
+    <string name="invalid_description">Description cannot be empty</string>
+    <string name="finished">Finished</string>
+    <string name="finish">Finish</string>
+    <string name="missing_inputs">Missing inputs</string>
+    <string name="prompt_working_date">Add working date</string>
+    <string name="prompt_delivery_date">Choose a delivery date</string>
+
+    <!-- Project -->
+    <string name="project_commission">This project is followed by <font fgcolor="#FF0000">%1$s</font> for %2$s.</string>
 </resources>
